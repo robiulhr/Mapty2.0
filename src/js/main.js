@@ -53,11 +53,8 @@ function askTheGeolocation() {
                 'Hope you will have an awesome experience.',
                 'success'
             )
-            geolocationCoords(lacationEvant)
-            window.localStorage.setItem("userLocation", JSON.stringify(geolocationCoords(lacationEvant)));
-            savedUserlocation = JSON.parse(window.localStorage.getItem("userLocation"))
-            console.log(savedUserlocation)
-            showThemap(savedUserlocation);
+            const croods = geolocationCoords(lacationEvant)
+            showThemap(croods);
             showHideWorkout();
         }, (locationEror) => {
             showTheErrorForGeolocation()
@@ -184,9 +181,5 @@ workoutsDiv.addEventListener("workoutshown",(event)=>{
     })
 })
 
-if(savedUserlocation){ 
-    showThemap(savedUserlocation);
-    showHideWorkout();
-}else{
-    askTheGeolocation()
-}
+
+askTheGeolocation()
