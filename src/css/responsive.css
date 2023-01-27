@@ -1,0 +1,44 @@
+@media only screen and (max-width: 1200px) {
+    .sidebar {
+        flex-basis: 50rem;
+      }
+}
+@media only screen and (max-width: 1000px) {
+    .sidebar {
+        flex-basis: 45rem;
+        padding: 2rem 4rem 3rem 4rem;
+      }
+    
+}
+@media only screen and (max-width: 900px) {
+    body{
+        flex-direction: column;
+        min-height: 100vh;
+        height: inherit;
+    }
+    .sidebar {
+        padding: 4rem 8rem 5rem 8rem;
+      }
+    .form {
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+    }
+    #map{
+        flex: auto;
+        height: 100vh;
+        width: 100%;
+    }
+    .form {
+         grid-template-columns: 1fr 1fr; 
+    }
+} 
+
+
+@media only screen and (max-width: 600px) {
+    .sidebar {
+        padding: 3rem 4rem 4rem 4rem;
+      }
+    .no-data-available p{
+        line-height: 5rem;
+        font-size: 1.4rem;
+    }
+} 
