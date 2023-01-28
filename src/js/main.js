@@ -8,7 +8,6 @@ const formCross = form.querySelector(".form__cross");
 const noDataAvailable = document.querySelector(".no-data-available");
 const workoutsDiv = document.querySelector(".workouts");
 const allMonth = ["January","February","March","April","June","July","August","September","October","November","December"]
-let savedUserlocation = JSON.parse(window.localStorage.getItem("userLocation")) || null
 
 let map, mapLatlng, swalWithBootstrapButtons;
 
@@ -25,6 +24,8 @@ function showThemap(coords) {
         mapLatlng = Object.values(mapEvent.latlng);
     });
 }
+
+
 
 function showTheErrorForGeolocation() {
     swalWithBootstrapButtons.fire({
@@ -47,13 +48,8 @@ function askTheGeolocation() {
         swalWithBootstrapButtons = Swal.mixin({
             buttonsStyling: true
         })
-        navigator.geolocation.getCurrentPosition((lacationEvant) => {
-            swalWithBootstrapButtons.fire(
-                'Thanks for agree.',
-                'Hope you will have an awesome experience.',
-                'success'
-            )
-            const croods = geolocationCoords(lacationEvant)
+        navigator.geolocation.getCurrentPosition((locationEvant) => {
+            const croods = geolocationCoords(locationEvant)
             showThemap(croods);
             showHideWorkout();
         }, (locationEror) => {
@@ -181,5 +177,4 @@ workoutsDiv.addEventListener("workoutshown",(event)=>{
     })
 })
 
-
-askTheGeolocation()
+askTheGeolocation();
