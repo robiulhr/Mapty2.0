@@ -42,6 +42,8 @@ class App {
     #mapLatlng
     #swalWithBootstrapButtons
     // getting dom elements
+    _html =  document.querySelector("html");
+    _body = document.querySelector("body");
     _form = document.querySelector(".form");
     _distanceInput = document.querySelector(".form__input--distance");
     _typeInput = document.querySelector(".form__input--type");
@@ -51,18 +53,22 @@ class App {
     _formCross = this._form.querySelector(".form__cross");
     _noDataAvailable = document.querySelector(".no-data-available");
     _workoutsDiv = document.querySelector(".workouts");
-
+    _toggle = document.querySelector("#toggle");
     constructor() {
         this.workout = [];
-
+        this.defaultTheme = "dark";
+        this.savedTheme;
         // calling the events
-        this._form.addEventListener("submit", this._formSubmit.bind(this))
-        this._typeInput.addEventListener("change", this._changeWorkoutType.bind(this))
-        this._formCross.addEventListener("click", this._formShowHide.bind(this))
-        this._workoutsDiv.addEventListener("workoutshown", this._moveMapToWorkout.bind(this))
+        this._form.addEventListener("submit", this._formSubmit.bind(this));
+        this._typeInput.addEventListener("change", this._changeWorkoutType.bind(this));
+        this._formCross.addEventListener("click", this._formShowHide.bind(this));
+        this._workoutsDiv.addEventListener("workoutshown", this._moveMapToWorkout.bind(this));
+        this._toggle.addEventListener("click",this._changeTheme.bind(this));
         // calling ask geoLocation function
         this._askTheGeolocation();
+        this._setTheme()
     }
+
 
 
     _askTheGeolocation() {
@@ -129,6 +135,17 @@ class App {
         this._distanceInput.value = "", this._durationInput.value = "", this._cadenceInput.value = "", this._elevationInput.value = ""
         this._distanceInput.focus();
     }
+    _changeTheme(e){
+        this.savedTheme = window.localStorage.getItem("theme") || this.defaultTheme
+        this.savedTheme == "dark" ?   this.savedTheme = "light" : this.savedTheme = "dark"
+        window.localStorage.setItem("theme",this.savedTheme);
+        this._setTheme()
+    }
+    _setTheme(){
+        this.savedTheme = window.localStorage.getItem("theme") || this.defaultTheme
+        this.savedTheme == "dark" ? this._toggle.checked = false :this._toggle.checked = true 
+        this._html.setAttribute("data-theme",this.savedTheme)
+    }
 
     _formSubmit(e) {
         e.preventDefault()
@@ -139,7 +156,7 @@ class App {
             this._renderWorkout();
         }
     }
-    
+
     _checkInputFeild(type, distance, duration, cadence, elevGain) {
         if (!distance || !duration || (type == "running" ? !cadence : !elevGain)) {
             Swal.fire({

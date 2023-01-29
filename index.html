@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme=''>
 
 <head>
   <meta charset="UTF-8" />
@@ -28,9 +28,9 @@
 
   <link rel="stylesheet" href="./src/css/style.css" />
   <link rel="stylesheet" href="./src/css/responsive.css">
-  
+
   <title>mapty // Map your workouts</title>
- 
+
 </head>
 
 <body>
@@ -38,14 +38,20 @@
     body.swal2-height-auto {
       height: 100vh !important;
     }
-    .swal2-container .swal2-popup{
+
+    .swal2-container .swal2-popup {
       font-size: 1.3rem;
     }
-    
   </style>
   <main>
     <div class="sidebar">
       <img src="./img/logo/logo.png" alt="Logo" class="logo" />
+      <div class="dark-light-button">
+        <input type="checkbox" id="toggle" class="toggle--checkbox">
+        <label for="toggle" class="toggle--label">
+          <span class="toggle--label-background"></span>
+        </label>
+      </div>
       <form class="form hidden">
         <div class="form__cross">&#10060;</div>
         <div class="form__row">
@@ -63,7 +69,7 @@
           <label class="form__label">Duration</label>
           <input class="form__input form__input--duration" placeholder="min" />
         </div>
-  
+
         <div class="form__row">
           <label class="form__label">Cadence</label>
           <input class="form__input form__input--cadence" placeholder="step/min" />
@@ -75,7 +81,7 @@
         <button class="form__btn">OK</button>
       </form>
       <ul class="workouts hidden">
-  
+
         <!-- <li class="workout workout--running" data-id="1234567890">
             <h2 class="workout__title">Running on April 14</h2>
             <div class="workout__details">
@@ -134,7 +140,7 @@
     <h1>OFFLINE</h1>
     <h4>Please check your internet connection</h4>
     <a href="#" class="button retry">RETRY</a>
-</div>
+  </div>
 </body>
 
 </html>
