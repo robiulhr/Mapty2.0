@@ -1,11 +1,11 @@
 @media only screen and (max-width: 1200px) {
     .sidebar {
-        flex-basis: 50rem;
+        flex-basis: 45rem;
       }
 }
 @media only screen and (max-width: 1000px) {
     .sidebar {
-        flex-basis: 45rem;
+        flex-basis: 40rem;
         padding: 2rem 4rem 3rem 4rem;
       }
     
@@ -24,12 +24,22 @@
     }
     #map{
         flex: auto;
-        height: 100vh;
         width: 100%;
+    }
+    #map,#chart{
+        height: 50vh;
     }
     .form {
          grid-template-columns: 1fr 1fr; 
     }
+    #timer.container{
+        top: inherit;
+        bottom: 15px;
+        right: 5rem;
+    }
+    .timer-icon{
+        left: 8rem;
+      }
 } 
 
 

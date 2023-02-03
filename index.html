@@ -9,7 +9,8 @@
 
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet" />
 
-
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
   <!-- leaflet plugin code -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
     integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin="" />
@@ -21,6 +22,9 @@
   <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.1/dist/sweetalert2.min.css" rel="stylesheet">
   </link>
   <script defer src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.1/dist/sweetalert2.all.min.js"></script>
+  <!-- chart js  -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 
   <!-- <script defer src="other.js"></script> -->
   <script defer src="./src/js/main.js"></script>
@@ -41,6 +45,14 @@
 
     .swal2-container .swal2-popup {
       font-size: 1.3rem;
+    }
+
+    .btn.btn-danger {
+      background-color: var(--color-brand--3);
+    }
+
+    .btn.btn-info {
+      background-color: var(--color-brand--4);
     }
   </style>
   <main>
@@ -80,67 +92,112 @@
         </div>
         <button class="form__btn">OK</button>
       </form>
-      <ul class="workouts hidden">
+        <div class="workouts-wrapper hidden">
+          <ul class="workouts">
+            <!-- <li class="workout workout--running" data-id="1234567890">
+                <h2 class="workout__title">Running on April 14</h2>
+                <div class="workout__details">
+                  <span class="workout__icon">🏃‍♂️</span>
+                  <span class="workout__value">5.2</span>
+                  <span class="workout__unit">km</span>
+                </div>
+                <div class="workout__details">
+                  <span class="workout__icon">⏱</span>
+                  <span class="workout__value">24</span>
+                  <span class="workout__unit">min</span>
+                </div>
+                <div class="workout__details">
+                  <span class="workout__icon">⚡️</span>
+                  <span class="workout__value">4.6</span>
+                  <span class="workout__unit">min/km</span>
+                </div>
+                <div class="workout__details">
+                  <span class="workout__icon">🦶🏼</span>
+                  <span class="workout__value">178</span>
+                  <span class="workout__unit">spm</span>
+                </div>
+              </li>
+              <li class="workout workout--cycling" data-id="1234567891">
+                <h2 class="workout__title">Cycling on April 5</h2>
+                <div class="workout__details">
+                  <span class="workout__icon">🚴‍♀️</span>
+                  <span class="workout__value">27</span>
+                  <span class="workout__unit">km</span>
+                </div>
+                <div class="workout__details">
+                  <span class="workout__icon">⏱</span>
+                  <span class="workout__value">95</span>
+                  <span class="workout__unit">min</span>
+                </div>
+                <div class="workout__details">
+                  <span class="workout__icon">⚡️</span>
+                  <span class="workout__value">16</span>
+                  <span class="workout__unit">km/h</span>
+                </div>
+                <div class="workout__details">
+                  <span class="workout__icon">⛰</span>
+                  <span class="workout__value">223</span>
+                  <span class="workout__unit">m</span>
+                </div>
+              </li> -->
+          </ul>
+        </div>
 
-        <!-- <li class="workout workout--running" data-id="1234567890">
-            <h2 class="workout__title">Running on April 14</h2>
-            <div class="workout__details">
-              <span class="workout__icon">🏃‍♂️</span>
-              <span class="workout__value">5.2</span>
-              <span class="workout__unit">km</span>
-            </div>
-            <div class="workout__details">
-              <span class="workout__icon">⏱</span>
-              <span class="workout__value">24</span>
-              <span class="workout__unit">min</span>
-            </div>
-            <div class="workout__details">
-              <span class="workout__icon">⚡️</span>
-              <span class="workout__value">4.6</span>
-              <span class="workout__unit">min/km</span>
-            </div>
-            <div class="workout__details">
-              <span class="workout__icon">🦶🏼</span>
-              <span class="workout__value">178</span>
-              <span class="workout__unit">spm</span>
-            </div>
-          </li>
-          <li class="workout workout--cycling" data-id="1234567891">
-            <h2 class="workout__title">Cycling on April 5</h2>
-            <div class="workout__details">
-              <span class="workout__icon">🚴‍♀️</span>
-              <span class="workout__value">27</span>
-              <span class="workout__unit">km</span>
-            </div>
-            <div class="workout__details">
-              <span class="workout__icon">⏱</span>
-              <span class="workout__value">95</span>
-              <span class="workout__unit">min</span>
-            </div>
-            <div class="workout__details">
-              <span class="workout__icon">⚡️</span>
-              <span class="workout__value">16</span>
-              <span class="workout__unit">km/h</span>
-            </div>
-            <div class="workout__details">
-              <span class="workout__icon">⛰</span>
-              <span class="workout__value">223</span>
-              <span class="workout__unit">m</span>
-            </div>
-          </li> -->
-      </ul>
       <div class="no-data-available">
         <img src="./img/others/no-data.png" alt="">
         <p>Add your workout record by clicking the map.</p>
       </div>
+      <div class="pagination-wrapper">
+        <ul class="pagination"></ul>
+      </div>
+
+      <div id="timer" class="container hidden">
+        <div class="timerDisplay">
+          00 : 00 : 00 : 000
+        </div>
+        <div class="buttons">
+          <button id="pauseTimer">Pause</button>
+          <button id="startTimer">Start</button>
+          <button id="resetTimer">Reset</button>
+        </div>
+      </div>
     </div>
-    <div id="map"></div>
+    <div class="right-section">
+      <div id="map"></div>
+    </div>
   </main>
+  <div id="chart">
+    <div class="chart-options"></div>
+    <canvas id="myChart"></canvas>
+  </div>
   <div class="wrapper">
     <h1>OFFLINE</h1>
     <h4>Please check your internet connection</h4>
     <a href="#" class="button retry">RETRY</a>
   </div>
+  <script>
+    const ctx = document.getElementById('myChart');
+
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['01 january', '02 january', '02 january', '03 january', '04 january', '05 january', '06 january', '07 january', '08 january', '09 january', '09 january', '09 january', '09 january', '09 january', '09 january', '09 january'],
+        datasets: [{
+          label: '# of Votes',
+          data: [120, 19, 3, 5, 2, 3, 120, 19, 3, 5, 2, 3, 120, 19, 3, 5, 2, 3],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+  </script>
 </body>
 
 </html>
