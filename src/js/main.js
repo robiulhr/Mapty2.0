@@ -146,7 +146,7 @@ class App {
                 className: "map_style"
             }).addTo(this.#map);
         } catch (err) {
-            this._showMapError.bind(this);
+            this._showMapError(err);
         }
         this._mapDiv.style.backgroundImage = "url('')"
         this.#map.on('click', this._showOptionsOnMapClick.bind(this));
@@ -310,19 +310,20 @@ class App {
 
     _moveMapToWorkoutEventHandler() {
         this._workoutsDiv.querySelectorAll("li.workout").forEach(function (elem) {
+            const that = this;
             elem.addEventListener("click", function (e) {
                 const deleteBtn = elem.querySelector(".workout__buttons .delete");
                 const editBtn = elem.querySelector(".workout__buttons .edit");
                 if (e.target != deleteBtn && e.target != editBtn && !Array.from(deleteBtn.children).includes(e.target) && !Array.from(editBtn.children).includes(e.target)) {
                     e.preventDefault()
-                    const savedData = this._getSavedData().data[this._paginate.getCurrentPage].data;
+                    const savedData = that._getSavedData().data[that._paginate.getCurrentPage].data;
                     const coords = savedData.find(ele => ele.id == elem.attributes[1].value).location
-                    this.#map.setView(coords, 15, {
+                    that.#map.setView(coords, 15, {
                         animate: true
                     });
                 }
-            }.bind(this))
-        }.bind(this))
+            })
+        },this)
     }
 
     _workoutEdit(ele) {
@@ -356,7 +357,7 @@ class App {
     _workoutEditEventHandler() {
         this._workoutsDiv.querySelectorAll(".workout__buttons .edit").forEach(function (ele) {
             ele.addEventListener("click", this._workoutEditCallback.bind(this))
-        }.bind(this))
+        },this)
     }
 
     _workoutDelete(ele) {
@@ -409,7 +410,7 @@ class App {
     _workoutDeleteEventHandler() {
         this._workoutsDiv.querySelectorAll(".workout__buttons .delete").forEach(function (ele) {
             ele.addEventListener("click", this._workoutDeleteCallback.bind(this))
-        }.bind(this))
+        },this)
     }
 }
 
