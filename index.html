@@ -22,6 +22,13 @@
   <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.1/dist/sweetalert2.min.css" rel="stylesheet">
   </link>
   <script defer src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.1/dist/sweetalert2.all.min.js"></script>
+  <!-- paginate script and css  -->
+  <link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/pro-paginate@1.1.2/src/style/style.css"
+/>
+<script src="https://cdn.jsdelivr.net/npm/pro-paginate@1.1.2/build/paginate.es5.js"></script>
+<!-- <script src="./src/js/paginate.js"></script> -->
   <!-- chart js  -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -92,65 +99,63 @@
         </div>
         <button class="form__btn">OK</button>
       </form>
-        <div class="workouts-wrapper hidden">
-          <ul class="workouts">
-            <!-- <li class="workout workout--running" data-id="1234567890">
-                <h2 class="workout__title">Running on April 14</h2>
-                <div class="workout__details">
-                  <span class="workout__icon">🏃‍♂️</span>
-                  <span class="workout__value">5.2</span>
-                  <span class="workout__unit">km</span>
-                </div>
-                <div class="workout__details">
-                  <span class="workout__icon">⏱</span>
-                  <span class="workout__value">24</span>
-                  <span class="workout__unit">min</span>
-                </div>
-                <div class="workout__details">
-                  <span class="workout__icon">⚡️</span>
-                  <span class="workout__value">4.6</span>
-                  <span class="workout__unit">min/km</span>
-                </div>
-                <div class="workout__details">
-                  <span class="workout__icon">🦶🏼</span>
-                  <span class="workout__value">178</span>
-                  <span class="workout__unit">spm</span>
-                </div>
-              </li>
-              <li class="workout workout--cycling" data-id="1234567891">
-                <h2 class="workout__title">Cycling on April 5</h2>
-                <div class="workout__details">
-                  <span class="workout__icon">🚴‍♀️</span>
-                  <span class="workout__value">27</span>
-                  <span class="workout__unit">km</span>
-                </div>
-                <div class="workout__details">
-                  <span class="workout__icon">⏱</span>
-                  <span class="workout__value">95</span>
-                  <span class="workout__unit">min</span>
-                </div>
-                <div class="workout__details">
-                  <span class="workout__icon">⚡️</span>
-                  <span class="workout__value">16</span>
-                  <span class="workout__unit">km/h</span>
-                </div>
-                <div class="workout__details">
-                  <span class="workout__icon">⛰</span>
-                  <span class="workout__value">223</span>
-                  <span class="workout__unit">m</span>
-                </div>
-              </li> -->
-          </ul>
+       
+      <div class="workouts-wrapper">
+        <div class="workouts">
+          <div id="paginate">
+            <!-- <div class="workouts-wrapper hidden">
+              <ul class="workouts">
+                <li class="workout workout--running" data-id="1234567890">
+                    <h2 class="workout__title">Running on April 14</h2>
+                    <div class="workout__details">
+                      <span class="workout__icon">🏃‍♂️</span>
+                      <span class="workout__value">5.2</span>
+                      <span class="workout__unit">km</span>
+                    </div>
+                    <div class="workout__details">
+                      <span class="workout__icon">⏱</span>
+                      <span class="workout__value">24</span>
+                      <span class="workout__unit">min</span>
+                    </div>
+                    <div class="workout__details">
+                      <span class="workout__icon">⚡️</span>
+                      <span class="workout__value">4.6</span>
+                      <span class="workout__unit">min/km</span>
+                    </div>
+                    <div class="workout__details">
+                      <span class="workout__icon">🦶🏼</span>
+                      <span class="workout__value">178</span>
+                      <span class="workout__unit">spm</span>
+                    </div>
+                  </li>
+                  <li class="workout workout--cycling" data-id="1234567891">
+                    <h2 class="workout__title">Cycling on April 5</h2>
+                    <div class="workout__details">
+                      <span class="workout__icon">🚴‍♀️</span>
+                      <span class="workout__value">27</span>
+                      <span class="workout__unit">km</span>
+                    </div>
+                    <div class="workout__details">
+                      <span class="workout__icon">⏱</span>
+                      <span class="workout__value">95</span>
+                      <span class="workout__unit">min</span>
+                    </div>
+                    <div class="workout__details">
+                      <span class="workout__icon">⚡️</span>
+                      <span class="workout__value">16</span>
+                      <span class="workout__unit">km/h</span>
+                    </div>
+                    <div class="workout__details">
+                      <span class="workout__icon">⛰</span>
+                      <span class="workout__value">223</span>
+                      <span class="workout__unit">m</span>
+                    </div>
+                  </li>
+              </ul>
+            </div> -->
+          </div>
         </div>
-
-      <div class="no-data-available">
-        <img src="./img/others/no-data.png" alt="">
-        <p>Add your workout record by clicking the map.</p>
       </div>
-      <div class="pagination-wrapper">
-        <ul class="pagination"></ul>
-      </div>
-
       <div id="timer" class="container hidden">
         <div class="timerDisplay">
           00 : 00 : 00 : 000

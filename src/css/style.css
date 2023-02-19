@@ -117,6 +117,7 @@ a:visited {
 }
 
 .workout {
+  max-width: 500px;
   background-color: var(--color-dark--2);
   border-radius: 5px;
   padding: 1.5rem 2.25rem;
@@ -196,6 +197,9 @@ a:visited {
   width: max-content;
   height: 38px;
 }
+.items_container{
+  box-shadow: none;
+}
 .form {
   background-color: var(--color-dark--2);
   border-radius: 5px;
@@ -266,7 +270,7 @@ a:visited {
 
 .no-data-available {
   list-style: none;
-  height: 77vh;
+  height: 100%;
   overflow-x: hidden;
   width: 100%;
   padding: 1rem;
@@ -274,6 +278,7 @@ a:visited {
   align-items: center;
   justify-content: center;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .no-data-available p {
@@ -295,6 +300,9 @@ a:visited {
 	overflow: auto;
 	display: inline-block;
 	border-radius: 5px;
+}
+.items_container.column_view{
+  height: 500px;
 }
 .pagination li {
 	float: left;

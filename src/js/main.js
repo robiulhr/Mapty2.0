@@ -1,6 +1,7 @@
+const allMonth = ["January", "February", "March", "April", "June", "July", "August", "September", "October", "November", "December"]
+
 class Workout {
     #_date = new Date();
-    #allMonth = ["January", "February", "March", "April", "June", "July", "August", "September", "October", "November", "December"]
     constructor(id, location, distance, duration) {
         this.id = id || Math.floor((Math.random() * this.#_date.getSeconds() * 1000000))
         this.location = location;
@@ -9,7 +10,7 @@ class Workout {
         this._createDateStr();
     }
     _createDateStr() {
-        return this.dateStr = `${this.#allMonth[this.#_date.getMonth()]} ${this.#_date.getDate()}`
+        return this.dateStr = `${allMonth[this.#_date.getMonth()]} ${this.#_date.getDate()}`
     }
 }
 
@@ -22,7 +23,7 @@ class Cycling extends Workout {
         this._calcSpeed()
     }
     _calcSpeed() {
-        return this.speed = this.distance / (this.duration / 60);
+        return this.speed = (this.distance / (this.duration / 60)).toFixed(3);
     }
 }
 
@@ -34,111 +35,16 @@ class Running extends Workout {
         this._calcPace()
     }
     _calcPace() {
-        return this.pace = this.duration / this.distance;
+        return this.pace = (this.duration / this.distance).toFixed(3);
     }
 }
 
 
 
-
-class Pagination{
-    #allMonth = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-    constructor(paginationContainer, visibilePages, data) {
-        this._paginationContainer = paginationContainer;
-        this._visiblePages = visibilePages;
-        this._data = data;
-        this._totalPages = this._data.length;
-        this._currentPage = 1;
-        this._currentStartPage = 1;
-        this._currentEndPage = this._visiblePages;
-    }
-    _paginationClickeventCallback(e) {
-        e.preventDefault();
-        const paginationclicked = new CustomEvent("paginationclicked")
-        document.dispatchEvent(paginationclicked);
-        const page = e.target.innerText;
-        const allDataPages = Object.values(this._paginationContainer.querySelectorAll("[page-type='data']"))
-        const clickedPage = allDataPages.findIndex(ele => {
-            return (e.target.closest("[page-type='data']") || e.target).attributes["data-page"].value == ele.attributes['data-page'].value
-        });
-        switch (page) {
-            case '<<':
-                this._currentPage = 1;
-                this._currentStartPage = 1;
-                this._currentEndPage = this._currentPage + 2
-                break;
-            case '>>':
-                this._currentPage = this._totalPages;
-                this._currentStartPage = this._currentPage - 2;
-                this._currentEndPage = this._currentPage;
-                break
-            case '<':
-                if (this._currentStartPage == 1 && this._currentStartPage != this._currentPage) this._currentPage--
-                else if (this._currentStartPage > 1) {
-                    this._currentPage--
-                    if (this._currentStartPage >= this._currentPage) {
-                        this._currentStartPage--
-                        this._currentEndPage--
-                    }
-                }
-                break
-            case '>':
-                if (this._currentEndPage == this._totalPages && this._currentEndPage != this._currentPage) this._currentPage++
-                else if (this._currentEndPage < this._totalPages) {
-                    this._currentPage++
-                    if (this._currentEndPage <= this._currentPage) {
-                        this._currentEndPage++
-                        this._currentStartPage++
-                    }
-                }
-                break
-            default:
-                this._currentPage = clickedPage + 1;
-                break;
-        }
-        this._buildPagination(this._currentStartPage, this._currentEndPage, this._currentPage);
-    };
-
-    _attachClickEventshandler() {
-        const pageLinks = this._paginationContainer.querySelectorAll('a');
-        for (let i = 0; i < pageLinks.length; i++) {
-            const pageLink = pageLinks[i];
-            pageLink.addEventListener("click", this._paginationClickeventCallback.bind(this))
-        }
-    };
-
-    /**
-     * funciton for creating the pagination
-     * @param {number} currentPage A number (start from 1); 
-     */
-
-    _buildPagination(startPage, endPage, currentPage) {
-        this._currentPage = currentPage;
-        this._currentStartPage = startPage;
-        this._currentEndPage = endPage
-        let pageLinks = '';
-        const classDisabled = 'class="disabled"'
-        const backLinks = (this._totalPages > this._visiblePages) && `<li><a href="#" ${startPage <= 1 && classDisabled} data-page="<<" page-type="option"><<</a></li><li><a href="#" ${currentPage <= 1 && classDisabled} data-page="<" page-type="option" ><</a></li>`
-        const nextLinks = (this._totalPages > this._visiblePages) && `<li><a href="#" ${currentPage >= this._totalPages && classDisabled} data-page=">" page-type="option">></a></li><li><a href="#"' + ${endPage >= this._totalPages && classDisabled} data-page=">>" page-type="option">>></a></li>`
-
-        for (let j = 1; j <= this._totalPages; j++) {
-            const active = (j === currentPage) ? ' class="active"' : '';
-            const displayPropery = j < startPage || j > endPage ? 'style="display:none"' : ""
-            pageLinks += `<li ${displayPropery}><a ${active}  href="#" data-page="${Number(this._data[j - 1])}" page-type="data"> ${this.#allMonth[Number(this._data[j - 1])]}</a></li>`;
-        }
-        this._paginationContainer.innerHTML = (backLinks || "") + pageLinks + (nextLinks || "");
-    };
-
-}
-
-
-/**
- * 
- */
 class App {
     #map;
     #mapLatlng;
-    #swalWithBootstrapButtons;
+    #swalWithBootstrapButtons = Swal.mixin({buttonsStyling: true});
     #updateWorkoutDataId = null;
     // getting dom elements
     _html = document.querySelector("html");
@@ -156,7 +62,7 @@ class App {
     _workoutsDiv = document.querySelector(".workouts");
     _toggle = document.querySelector("#toggle");
     _timerDiv = document.querySelector("#timer");
-    _pagination;
+    _paginate;
     constructor() {
         this.workout = {};
         this.defaultTheme = "dark";
@@ -166,15 +72,13 @@ class App {
         this._form.addEventListener("submit", this._formSubmitCallback.bind(this));
         this._typeInput.addEventListener("change", this._inputTypeCallback.bind(this));
         this._formCross.addEventListener("click", this._formShowHideCallback.bind(this));
+        this._workoutShownEvent = new CustomEvent("workoutshown")
         this._workoutsDiv.addEventListener("workoutshown", this._workwoutShownCallback.bind(this));
         this._toggle.addEventListener("click", this._changeThemeCallback.bind(this));
         this._body.addEventListener("mapoptionshown", function () {
             document.querySelector("#map_add_data_btn").addEventListener("click", this._formShowHideCallback.bind(this))
             document.querySelector("#map_timer_button").addEventListener("click", this._timerShowHideCallback.bind(this))
         }.bind(this));
-        document.addEventListener("paginationclicked", function () {
-            this._renderWorkout(this._pagination._currentPage);
-        }.bind(this))
         // calling ask geoLocation function
         this._askTheGeolocation();
         this._setTheme();
@@ -184,14 +88,26 @@ class App {
      */
     _askTheGeolocation() {
         if (navigator.geolocation) {
-            this.#swalWithBootstrapButtons = Swal.mixin({
-                buttonsStyling: true
-            })
             navigator.geolocation.getCurrentPosition((locationEvant) => {
                 const croods = this._geolocationCoords(locationEvant)
-                this._showThemap(croods);
-                this._renderWorkout(this.currentMonth);
-                // creating pagination variable
+                this._showThemap(croods);                
+                // create the pagination and render the workout 
+                    this._paginate = new ProPaginate({
+                        data: this._getSavedData().data || [],
+                        itemsView:"column_view",
+                        dataItemsArrayPath:"data",
+                        startpageNum:this.currentMonth,
+                        pageLinkAreaLabel:["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"],
+                        dataItemHtml:'<li class="workout workout--${paginateDataObj.type.slice(0,1).toLowerCase()+paginateDataObj.type.slice(1)}" data-id=${paginateDataObj.id}><div class="workout__item"><h2 class="workout__title">${paginateDataObj.type} on ${paginateDataObj.dateStr}</h2><div class="workout__buttons"><div class="edit" style="margin:0 10px"><span class="material-symbols-outlined">edit</span></div><div class="delete"><span class="material-symbols-outlined">delete</span></div></div></div><div class="workout__details__wrapper"><div class="workout__details"><span class="workout__icon">${paginateDataObj.type == "Running" ? "🏃‍♂️" : "🚴‍♀️"}</span><span class="workout__value">${paginateDataObj.distance}</span><span class="workout__unit">km</span></div><div class="workout__details"><span class="workout__icon">${"⏱"}</span><span class="workout__value">${paginateDataObj.duration}</span><span class="workout__unit">min</span></div><div class="workout__details"><span class="workout__icon">⚡️</span><span class="workout__value">${paginateDataObj.type == "Running" ? paginateDataObj.pace : paginateDataObj.speed}</span><span class="workout__unit">min/km</span></div><div class="workout__details"><span class="workout__icon">${paginateDataObj.type == "Running" ? "🦶🏼" : "⛰"}</span><span class="workout__value">${paginateDataObj.type == "Running" ? paginateDataObj.cadence : paginateDataObj.elevGain}</span><span class="workout__unit">${paginateDataObj.type == "Running" ? "spm" : "m"}</span></div></div></li>',
+                        singleDataItemArrayEmptyErrorHtml: '<div class="no-data-available"><img src="./img/others/no-data.png" alt=""><p>You havn\'t add any workout this month.</p></div>',
+                        mainDataArrayEmptyErrorHtml:'<div class="no-data-available"><img src="./img/others/no-data.png" alt=""><p>Add your workout record by clicking the map.</p></div>',
+                        onPageRender:function(){
+                            this._workoutsDiv.dispatchEvent(this._workoutShownEvent);
+                        }.bind(this)
+                    })
+                    if(this._getSavedData().data){
+                        this._workoutsDiv.dispatchEvent(this._workoutShownEvent);
+                    }          
             }, (locationEror) => {
                 this._showTheErrorForGeolocation();
             });
@@ -255,17 +171,6 @@ class App {
             }
         })
     }
-
-    _showWorkout() {
-        if (this._workoutsWrapper.classList.contains("hidden")) this._workoutsWrapper.classList.remove("hidden");
-        if (!this._noDataAvailable.classList.contains("hidden")) this._noDataAvailable.classList.add("hidden");
-    }
-
-    _hideWorkout() {
-        if (!this._workoutsWrapper.classList.contains("hidden")) this._workoutsWrapper.classList.add("hidden");
-        if (this._noDataAvailable.classList.contains("hidden")) this._noDataAvailable.classList.remove("hidden");
-    }
-
     _showOptionsOnMapClick(mapEvent) {
         const crood = Object.values(mapEvent.latlng);
         const popup = L.popup(crood, {
@@ -320,7 +225,10 @@ class App {
         if (allValueOk) {
             if (this.#updateWorkoutDataId) this._updateworkout(this.#updateWorkoutDataId, ...formValues, this.#mapLatlng)
             else this._addWorkout(...formValues, this.#mapLatlng);
-            this._renderWorkout(this.currentMonth);
+            // show data on pagination
+            this._paginate.setCurrentPage = this.currentMonth;
+            this._paginate.updateData = this._getSavedData().data;
+            this._workoutsDiv.dispatchEvent(this._workoutShownEvent);
             this.#updateWorkoutDataId = null;
             this._formShowHide(formValues[0]);
         }
@@ -347,30 +255,25 @@ class App {
     _addWorkout(type, distance, duration, cadence, elevGain, mapLatlng) {
         const date = new Date()
         const year = date.getFullYear()
-        // const month = date.getMonth()
-        const month = 4
+        const month = date.getMonth()
+        // const month = this.currentMonth;
         const workout = type == "running" ? new Running(null, mapLatlng, distance, duration, cadence) : new Cycling(null, mapLatlng, distance, duration, elevGain);
         const savedData = this._getSavedData()
-        if (savedData.year == year) {
-            savedData.data[month] ??= [];
-            savedData.data[month].push(workout);
-        }
-        else {
-            savedData.year = year;
-            savedData.data = {};
-            savedData.data[month] = [];
-            savedData.data[month].push(workout);
-        }
-        this._saveData(savedData);
-        this._renderWorkout(this.currentMonth);
+            savedData.year ??= year;
+            savedData.data ??= [];
+            savedData.data[month] ??= {};
+            savedData.data[month]['month'] ??= allMonth[month];
+            savedData.data[month]["data"] ??= [];
+            savedData.data[month]["data"].push(workout);
+            this._saveData(savedData);
     }
 
-    _updateworkout(id, type, distance, duration, cadence, elevGain, mapLatlng) {
-        const savedData = this._getSavedData()
-        const foundIndex = savedData.findIndex(x => x.id == id);
-        savedData[foundIndex] = type == "running" ? new Running(id, mapLatlng, distance, duration, cadence) : new Cycling(id, mapLatlng, distance, duration, elevGain);
-        this._saveData(savedData);
-    }
+        _updateworkout(id, type, distance, duration, cadence, elevGain, mapLatlng) {
+            const savedData = this._getSavedData();
+            const foundIndex = savedData.data[this._paginate.getCurrentPage].data.findIndex(x => x.id == id);
+            savedData.data[this._paginate.getCurrentPage].data[foundIndex] = type == "running" ? new Running(id, mapLatlng, distance, duration, cadence) : new Cycling(id, mapLatlng, distance, duration, elevGain);
+            this._saveData(savedData);
+        }
 
     _getSavedData() {
         return JSON.parse(window.localStorage.getItem('workoutData')) || this.workout;
@@ -378,68 +281,6 @@ class App {
 
     _saveData(data) {
         window.localStorage.setItem("workoutData", JSON.stringify(data));
-    }
-
-    _createandRenderPagination(data) {
-        const paginationContainer = document.querySelector('.pagination');
-        this._pagination = new Pagination(paginationContainer, 3, data);
-        const currentMonthstarfromone = this.currentMonth + 1
-        const startPage = currentMonthstarfromone;
-        const endPage = currentMonthstarfromone + 2;
-        this._pagination._buildPagination(startPage, endPage, currentMonthstarfromone);
-    }
-    _renderWorkout(month) {
-        console.log(month)
-        const saveData = this._getSavedData();
-        const monthSavedData = saveData.data[month] || [];
-        console.log(saveData,saveData.data)
-        console.log(monthSavedData)
-        if (monthSavedData.length > 0) {
-            this._showWorkout();
-            this._workoutsDiv.innerHTML = ""
-            monthSavedData.forEach((ele, ind) => {
-                this._workoutsDiv.innerHTML += `<li class="workout workout--${ele.type.slice(0, 1).toLowerCase() + ele.type.slice(1)}" data-id=${ele.id}>
-                <div class="workout__item">
-                <h2 class="workout__title">${ele.type} on ${ele.dateStr}</h2>
-                <div class="workout__buttons">
-                    <div class="edit" style="margin:0 10px">
-                        <span class="material-symbols-outlined">edit</span>
-                    </div>
-                    <div class="delete">
-                        <span class="material-symbols-outlined">delete</span>
-                    </div>
-                </div>
-                </div>
-                <div class="workout__details__wrapper">
-                <div class="workout__details">
-                <span class="workout__icon">${ele.type == "Running" ? '🏃‍♂️' : '🚴‍♀️'}</span>
-                <span class="workout__value">${ele.distance}</span>
-                <span class="workout__unit">km</span>
-              </div>
-              <div class="workout__details">
-                <span class="workout__icon">${"⏱"}</span>
-                <span class="workout__value">${ele.duration}</span>
-                <span class="workout__unit">min</span>
-              </div>
-              <div class="workout__details">
-                <span class="workout__icon">⚡️</span>
-                <span class="workout__value">${ele.type == "Running" ? ele.pace : ele.speed}</span>
-                <span class="workout__unit">min/km</span>
-              </div>
-              <div class="workout__details">
-                <span class="workout__icon">${ele.type == "Running" ? "🦶🏼" : "⛰"}</span>
-                <span class="workout__value">${ele.type == "Running" ? ele.cadence : ele.elevGain}</span>
-                <span class="workout__unit">${ele.type == "Running" ? "spm" : "m"}</span>
-              </div>    
-                </div>
-              
-              </li>`
-                this._mapMarker(ele.location, ele.type, ele.dateStr);
-            })
-            const workoutsDivEvent = new CustomEvent("workoutshown")
-            this._workoutsDiv.dispatchEvent(workoutsDivEvent)
-        } else this._hideWorkout();
-        this._createandRenderPagination(Object.keys(saveData.data));
     }
 
     _mapMarker(mapLatlngValue, type, dateStr) {
@@ -465,7 +306,6 @@ class App {
         this._moveMapToWorkoutEventHandler()
         this._workoutEditEventHandler();
         this._workoutDeleteEventHandler();
-        this._workoutsDiv.removeEventListener("workoutshown", () => { })
     }
 
     _moveMapToWorkoutEventHandler() {
@@ -475,7 +315,7 @@ class App {
                 const editBtn = elem.querySelector(".workout__buttons .edit");
                 if (e.target != deleteBtn && e.target != editBtn && !Array.from(deleteBtn.children).includes(e.target) && !Array.from(editBtn.children).includes(e.target)) {
                     e.preventDefault()
-                    const savedData = JSON.parse(window.localStorage.getItem('workoutData'))
+                    const savedData = this._getSavedData().data[this._paginate.getCurrentPage].data;
                     const coords = savedData.find(ele => ele.id == elem.attributes[1].value).location
                     this.#map.setView(coords, 15, {
                         animate: true
@@ -486,7 +326,7 @@ class App {
     }
 
     _workoutEdit(ele) {
-        const savedData = JSON.parse(window.localStorage.getItem('workoutData'))
+        const savedData = this._getSavedData().data[this._paginate.getCurrentPage].data;
         const { id, location, type, distance, duration, cadence, elevGain } = savedData.find(el => el.id == ele.attributes[1].value);
         this.#mapLatlng = location;
         this.#updateWorkoutDataId = id;
@@ -520,10 +360,17 @@ class App {
     }
 
     _workoutDelete(ele) {
-        const savedData = JSON.parse(window.localStorage.getItem('workoutData'))
-        const data = savedData.filter(el => el.id != ele.attributes[1].value);
-        this._saveData(data);
-        this._renderWorkout(this.currentMonth);
+        let savedData = this._getSavedData();
+       savedData.data[this._paginate.getCurrentPage].data = savedData.data[this._paginate.getCurrentPage].data.filter(el => el.id != ele.attributes[1].value);
+       if(!savedData?.data[this._paginate.getCurrentPage]?.data.length>0) {
+        savedData.data.splice(this._paginate.getCurrentPage,this._paginate.getCurrentPage)
+        }
+        let haveNoData = true;
+        savedData.data.forEach(ele=>{
+            if(ele != null && typeof ele == "object" && ele?.data.length > 0) haveNoData = false;
+        })
+       if(haveNoData) savedData = null;
+       savedData?.data ? this._saveData(savedData) :  window.localStorage.removeItem("workoutData");       
     }
 
     _workoutDeleteCallback(e) {
@@ -548,6 +395,7 @@ class App {
                     'Your file has been deleted.',
                     'success'
                 )
+                 this._paginate.updateData = await (this._getSavedData().data || []);
             } else {
                 this.#swalWithBootstrapButtons.fire(
                     'Cancelled',
@@ -564,10 +412,6 @@ class App {
         }.bind(this))
     }
 }
-
-
-
-
 
 
 // if the user is ofline or online 
