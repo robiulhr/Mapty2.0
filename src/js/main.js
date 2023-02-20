@@ -48,7 +48,7 @@
         {
           // type:"",
           label: "Workout Duration",
-          data: savedData[currentPage].data.map((ele) => +ele.duration),
+          data: this.getSavedData[this.getCurrentPage]?.data.map((ele) => +ele.duration),
           fill: false,
           lineTension: 0.1,
           backgroundColor: "rgba(75,192,192,0.4)",
@@ -71,7 +71,7 @@
         {
           // type:"",
           label: "Workout Distance",
-          data: savedData[currentPage].data.map((ele) => +ele.distance),
+          data: this.savedData[this.getCurrentPage]?.data.map((ele) => +ele.distance),
           borderWidth: 1,
           backgroundColor: "rgba(75, 192, 122, 0.4)",
           borderColor: "rgba(75,192,192,1)",
@@ -79,14 +79,14 @@
         {
           // type:"running",
           label: "Running Cadence",
-          data: savedData[currentPage].data.map((ele) => +ele.cadence),
+          data: this.savedData[this.getCurrentPage]?.data.map((ele) => +ele.cadence),
           borderWidth: 1,
           backgroundColor: "rgba(126, 192, 75, 0.4)",
           borderColor: "rgba(75,192,192,1)",
         },
         {
           label: "Cycling pace",
-          data: savedData[currentPage].data.map((ele) => +ele.pace),
+          data: this.savedData[this.getCurrentPage]?.data.map((ele) => +ele.pace),
           borderWidth: 1,
           backgroundColor: "rgba(192, 188, 75, 0.4)",
           borderColor: "rgba(75,192,192,1)",
@@ -94,7 +94,7 @@
         {
           // type:"running",
           label: "Running elevGain",
-          data: savedData[currentPage].data.map((ele) => +ele.elevGain),
+          data: this.savedData[this.getCurrentPage]?.data.map((ele) => +ele.elevGain),
           borderWidth: 1,
           backgroundColor: "rgba(192, 128, 75, 0.4)",
           borderColor: "rgba(75,192,192,1)",
@@ -102,7 +102,7 @@
         {
           // type:"cycling",
           label: "Cycling speed",
-          data: savedData[currentPage].data.map((ele) => +ele.speed),
+          data: this.savedData[this.getCurrentPage]?.data.map((ele) => +ele.speed),
           borderWidth: 1,
           backgroundColor: "rgba(108, 75, 192, 0.4)",
           borderColor: "rgba(75,192,192,1)",
@@ -110,45 +110,98 @@
       ];
       this._runningDataSets = [this._allDataSets[0], this._allDataSets[1], this._allDataSets[2], this._allDataSets[3]];
       this._cyclingDataSets = [this._allDataSets[0], this._allDataSets[1], this._allDataSets[4], this._allDataSets[5]];
-      this._chart = this._init(this.savedData, this.currentPage);
+      this._chart = this._init(this._chartTypeInput.value, this.getSavedData, this.getCurrentPage);
       this._chartTypeInput.addEventListener(
         "change",
         function (e) {
-          if (e.target.value == "all") {
-            this._chart.data.datasets = this._allDataSets;
-            const runningDataArr = savedData[currentPage].data
-            this._chart.data.labels = runningDataArr.map((ele) => ele.dateStr),
-            this._chart.data.datasets[0].data = runningDataArr.map(ele=>+ele.duration)
-            this._chart.data.datasets[1].data = runningDataArr.map(ele=>+ele.distance)
-            this._chart.data.datasets[2].data = runningDataArr.map(ele=>+ele.cadence)
-            this._chart.data.datasets[3].data = runningDataArr.map(ele=>+ele.pace)
-            this._chart.data.datasets[4].data = runningDataArr.map(ele=>+ele.elevGain)
-            this._chart.data.datasets[5].data = runningDataArr.map(ele=>+ele.speed)
-            this._chart.update();
-          } else if (e.target.value == "running") {
-            this._chart.data.datasets = this._runningDataSets;
-            const runningDataArr = savedData[currentPage].data.filter(ele=>ele.type == "Running")
-            this._chart.data.labels = runningDataArr.map((ele) => ele.dateStr),
-            this._chart.data.datasets[0].data = runningDataArr.map(ele=>+ele.duration)
-            this._chart.data.datasets[1].data = runningDataArr.map(ele=>+ele.distance)
-            this._chart.data.datasets[2].data = runningDataArr.map(ele=>+ele.cadence)
-            this._chart.data.datasets[3].data = runningDataArr.map(ele=>+ele.pace)
-            this._chart.update();
-          } else if (e.target.value == "cycling") {
-            console.log(this._chart.data.datasets)
-            this._chart.data.datasets = this._cyclingDataSets;
-            const runningDataArr = savedData[currentPage].data.filter(ele=> ele.type == "Cycling")
-            this._chart.data.labels = runningDataArr.map((ele) => ele.dateStr),
-            this._chart.data.datasets[0].data = runningDataArr.map(ele=>+ele.duration)
-            this._chart.data.datasets[1].data = runningDataArr.map(ele=>+ele.distance)
-            this._chart.data.datasets[2].data = runningDataArr.map(ele=>+ele.elevGain)
-            this._chart.data.datasets[3].data = runningDataArr.map(ele=>+ele.speed)
-            this._chart.update();
+          if (this.getSavedData.length > 0) {
+            if (e.target.value == "all") this._updateChartForAllType();
+            else if (e.target.value == "running") this._updateChartForRunningType();
+            else if (e.target.value == "cycling") this._updateChartForCyclingType();
           }
         }.bind(this)
       );
     }
-    _init(savedData, currentPage) {
+    // saved DAta
+    get getSavedData() {
+      return this.savedData;
+    }
+    set setSavedData(upDatedData) {
+      return (this.savedData = upDatedData);
+    }
+    // current page
+    get getCurrentPage() {
+      return this.currentPage;
+    }
+    set setCurrentPage(upDatedCurrentPage) {
+      return (this.currentPage = upDatedCurrentPage);
+    }
+    // all data
+    get getAllDataArr() {
+      return this.getSavedData[this.getCurrentPage]?.data;
+    }
+    get getAllDataLabels() {
+      return this.getAllDataArr.map((ele) => ele.dateStr);
+    }
+    get getAllDurationData() {
+      return this.getAllDataArr.map((ele) => +ele.duration);
+    }
+    get getAllDistanceData() {
+      return this.getAllDataArr.map((ele) => +ele.distance);
+    }
+    get getAllCadenceData() {
+      return this.getAllDataArr.map((ele) => +ele.cadence);
+    }
+    get getAllPaceData() {
+      return this.getAllDataArr.map((ele) => +ele.pace);
+    }
+    get getAllEliveGainData() {
+      return this.getAllDataArr.map((ele) => +ele.elevGain);
+    }
+    get getAllSpeedData() {
+      return this.getAllDataArr.map((ele) => +ele.speed);
+    }
+    // running data
+    get getRunningDataArr() {
+      return this.getSavedData[this.getCurrentPage].data.filter((ele) => ele.type == "Running");
+    }
+    get getRunningDataLabels() {
+      return this.getRunningDataArr.map((ele) => ele.dateStr);
+    }
+    get getRunningDurationData() {
+      return this.getRunningDataArr.map((ele) => +ele.duration);
+    }
+    get getRunningDistanceData() {
+      return this.getRunningDataArr.map((ele) => +ele.distance);
+    }
+    get getRunningCadenceData() {
+      return this.getRunningDataArr.map((ele) => +ele.cadence);
+    }
+    get getRunningPaceData() {
+      return this.getRunningDataArr.map((ele) => +ele.pace);
+    }
+
+    // cycling data
+    get getCyclingDataArr() {
+      return this.getSavedData[this.getCurrentPage].data.filter((ele) => ele.type == "Cycling");
+    }
+    get getCyclingDataLabels() {
+      return this.getCyclingDataArr.map((ele) => ele.dateStr);
+    }
+    get getCyclingDurationData() {
+      return this.getCyclingDataArr.map((ele) => +ele.duration);
+    }
+    get getCyclingDistanceData() {
+      return this.getCyclingDataArr.map((ele) => +ele.distance);
+    }
+    get getCyclingElevGainData() {
+      return this.getCyclingDataArr.map((ele) => +ele.elevGain);
+    }
+    get getCyclingSpeedData() {
+      return this.getCyclingDataArr.map((ele) => +ele.speed);
+    }
+
+    _init(dataType, savedData, currentPage) {
       const chartAreaBorder = {
         id: "chartAreaBorder",
         beforeDraw(chart, args, options) {
@@ -178,10 +231,13 @@
       };
       return new Chart(this._chartDiv, {
         type: "bar",
-        data: {
-          labels: savedData[currentPage].data.map((ele) => ele.dateStr),
-          datasets: this._allDataSets,
-        },
+        data:
+          savedData.length > 0
+            ? {
+                labels: savedData[currentPage].data.map((ele) => ele.dateStr),
+                datasets: dataType == "Running" ? this._runningDataSets : dataType == "Cycling" ? this._cyclingDataSets : this._allDataSets,
+              }
+            : [],
         options: {
           responsive: true,
           maintainAspectRatio: true,
@@ -288,9 +344,45 @@
         plugins: [chartAreaBorder, customCanvasBackgroundColor],
       });
     }
-    _typeChangeCallback(e) {}
-    _Update(dataType, upDatedData) {
-      if (dataType == "Running") {
+    _updateChartForAllType() {
+      this._chart.data.datasets = this._allDataSets;
+      this._chart.data.labels = this.getAllDataLabels;
+      this._chart.data.datasets[0].data = this.getAllDurationData;
+      this._chart.data.datasets[1].data = this.getAllDistanceData;
+      this._chart.data.datasets[2].data = this.getAllCadenceData;
+      this._chart.data.datasets[3].data = this.getAllPaceData;
+      this._chart.data.datasets[4].data = this.getAllEliveGainData;
+      this._chart.data.datasets[5].data = this.getAllSpeedData;
+      this._chart.update();
+    }
+    _updateChartForRunningType() {
+      this._chart.data.datasets = this._runningDataSets;
+      this._chart.data.labels = this.getRunningDataLabels;
+      this._chart.data.datasets[0].data = this.getRunningDurationData;
+      this._chart.data.datasets[1].data = this.getRunningDistanceData;
+      this._chart.data.datasets[2].data = this.getRunningCadenceData;
+      this._chart.data.datasets[3].data = this.getRunningPaceData;
+      this._chart.update();
+    }
+    _updateChartForCyclingType() {
+      this._chart.data.datasets = this._cyclingDataSets;
+      this._chart.data.labels = this.getCyclingDataLabels;
+      this._chart.data.datasets[0].data = this.getCyclingDurationData;
+      this._chart.data.datasets[1].data = this.getCyclingDistanceData;
+      this._chart.data.datasets[2].data = this.getCyclingElevGainData;
+      this._chart.data.datasets[3].data = this.getCyclingSpeedData;
+      this._chart.update();
+    }
+    _dataUpdate(upDatedData, currentPage) {
+      this.setSavedData = upDatedData;
+      this.setCurrentPage = currentPage;
+      if (this.getSavedData.length > 0) {
+        if (this._chartTypeInput.value == "all") this._updateChartForAllType();
+        else if (this._chartTypeInput.value == "running") this._updateChartForRunningType();
+        else if (this._chartTypeInput.value == "cycling") this._updateChartForCyclingType();
+      } else {
+        this._chart.data = {};
+        this._chart.update();
       }
     }
   }
@@ -318,6 +410,7 @@
     _timerDiv = document.querySelector("#timer");
     _paginate;
     _chart;
+    _bottomSectionDiv = document.querySelector(".bottom_section");
     constructor() {
       this.workout = {};
       this.defaultTheme = "dark";
@@ -367,7 +460,6 @@
               }.bind(this),
             });
             this._chart = new MyChartClass(savedData, this.currentMonth);
-
             if (this._getSavedData().data) {
               this._workoutsDiv.dispatchEvent(this._workoutShownEvent);
             }
@@ -487,8 +579,10 @@
         if (this.#updateWorkoutDataId) this._updateworkout(this.#updateWorkoutDataId, ...formValues, this.#mapLatlng);
         else this._addWorkout(...formValues, this.#mapLatlng);
         // show data on pagination
+        const savedData = this._getSavedData().data || [];
         this._paginate.setCurrentPage = this.currentMonth;
-        this._paginate.updateData = this._getSavedData().data;
+        this._paginate.updateData = savedData;
+        this._chart._dataUpdate(savedData, this.currentMonth);
         this._workoutsDiv.dispatchEvent(this._workoutShownEvent);
         this.#updateWorkoutDataId = null;
         this._formShowHide(formValues[0]);
@@ -533,7 +627,7 @@
       this._saveData(savedData);
     }
     _getSavedData() {
-      return JSON.parse(window.localStorage.getItem("workoutData")) || this.workout;
+      return  JSON.parse(window.localStorage.getItem("workoutData")) || this.workout;
     }
     _saveData(data) {
       window.localStorage.setItem("workoutData", JSON.stringify(data));
@@ -628,8 +722,8 @@
       savedData.data.forEach((ele) => {
         if (ele != null && typeof ele == "object" && ele?.data.length > 0) haveNoData = false;
       });
-      if (haveNoData) savedData = null;
-      savedData?.data ? this._saveData(savedData) : window.localStorage.removeItem("workoutData");
+      if (haveNoData) savedData = {};
+      this._saveData(savedData) 
     }
     _workoutDeleteCallback(e) {
       e.preventDefault();
@@ -651,7 +745,9 @@
           if (result.isConfirmed) {
             await this._workoutDelete(element);
             await this.#swalWithBootstrapButtons.fire("Deleted!", "Your file has been deleted.", "success");
-            this._paginate.updateData = await (this._getSavedData().data || []);
+            const savedData = (await this._getSavedData().data) || [];
+            await (this._paginate.updateData = savedData);
+            await this._chart._dataUpdate(savedData, this.currentMonth);
           } else {
             this.#swalWithBootstrapButtons.fire("Cancelled", "Your imaginary data is safe :)", "error");
           }

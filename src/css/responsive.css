@@ -61,8 +61,8 @@
 }
 
 @media only screen and (max-width: 800px) {
-  .bottom_section {
-    display: none;
+  .bottom_section[style] {
+    display: none !important;
   }
   
 }
