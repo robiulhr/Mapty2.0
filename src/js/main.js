@@ -199,7 +199,7 @@
       console.log(this._charShowTypeInput);
       this._charShowTypeInput.addEventListener("change", function (e) {
         if (that.getSavedData.length > 0) {
-          if (e.target.value == "bar" || e.target.value == "line" || e.target.value == "doughnut" || e.target.value == "pie" || e.target.value == "polarArea" || e.target.value == "radar") {
+          if (e.target.value == "bar" || e.target.value == "line" || e.target.value == "radar") {
             that._chart.config.type = e.target.value;
             that._chart.update();
           }
