@@ -215,7 +215,9 @@ a:visited {
   height: 9.25rem;
   transition: all 0.5s, transform 1ms;
 }
+#typeOfchart{
 
+}
 .form.hidden {
   transform: translateY(-30rem);
   height: 0;
@@ -353,22 +355,25 @@ a:visited {
 }
 
 .bottom_section{
-  height: 100vh;
+  height: max-content;
   width: 100vw;
   background-color: var(--color-dark--1);
   opacity: .9;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
 }
 .chart-options{
-  flex-basis: 30rem;
+  padding-top: 20px;
+  height: 20%;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .chart{
-  flex:1;
+  padding: 20px;
+  max-height: 80vh;
+  height: 80%;
   width:100%;
   display:flex;
   align-items: center;

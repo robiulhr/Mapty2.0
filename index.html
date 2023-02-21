@@ -158,13 +158,24 @@
     </div>
     <div class="bottom_section">
       <div class="chart-options">
-        <form id="typeOfchart" action="">
+        <form id="typeOfchart" class="form" action="">
           <div class="form__row" style="width: 100%;">
             <label class="form__label">Data Type</label>
-            <select class="form__input form__input--type">
+            <select class="form__input chartDataType form__input--type">
               <option value="all">All</option>
               <option value="running">Running</option>
               <option value="cycling">Cycling</option>
+            </select>
+          </div>
+          <div  class="form__row" style="width: 100%;">
+            <label class="form__label">Chart Type</label>
+            <select class="form__input chartShowType form__input--type">
+              <option value="bar">Bar Chart</option>
+              <option value="line">Line Chart</option>
+              <option value="doughnut">Doughnut Chart</option>
+              <option value="pie">Pie Chart</option>
+              <option value="polarArea">Polar Area Chart</option>
+              <option value="radar">Radar Chart</option>
             </select>
           </div>
         </form>

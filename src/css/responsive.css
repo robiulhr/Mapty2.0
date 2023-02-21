@@ -2,12 +2,6 @@
   .sidebar {
     flex-basis: 45rem;
   }
-  .bottom_section {
-    flex-direction: column;
-  }
-  .chart-options{
-    flex-basis: 20rem;
-  }
   .workout{
     max-width: 400px;
   }
@@ -27,13 +21,13 @@
   #map{
     height: 50vw;
   }
-}
-@media only screen and (max-width: 900px) {
   .bottom_section {
     flex-direction: column;
-    min-height: 100vh;
     height: inherit;
   }
+}
+@media only screen and (max-width: 900px) {
+  
   .sidebar {
     padding: 1rem 4rem 1rem 4rem;
   }
@@ -58,14 +52,11 @@
   .timer-icon {
     left: 8rem;
   }
-}
-
-@media only screen and (max-width: 800px) {
-  .bottom_section[style] {
+  .bottom_section{
     display: none !important;
   }
-  
 }
+
 
 @media only screen and (max-width: 600px) {
   .sidebar {

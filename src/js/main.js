@@ -40,7 +40,8 @@
 
   class MyChartClass {
     _chartDiv = document.getElementById("myChart");
-    _chartTypeInput = document.querySelector("#typeOfchart .form__input--type");
+    _chartDataTypeInput = document.querySelector("#typeOfchart .form__input--type.chartDataType");
+    _charShowTypeInput = document.querySelector("#typeOfchart .form__input--type.chartShowType");
     constructor(savedData, currentPage) {
       this.savedData = savedData;
       this.currentPage = currentPage;
@@ -55,15 +56,16 @@
           borderColor: "rgba(75,192,192,1)",
           borderCapStyle: "butt",
           borderWidth: 2,
+          hoverBorderWidth: 3,
           borderDashOffset: 0.0,
           borderJoinStyle: "miter",
-          pointBorderColor: "rgba(75,192,192,1)",
+          pointBorderColor: "rgba(220,220,220)",
           pointBackgroundColor: "#fff",
           pointBorderWidth: 1,
           pointHoverRadius: 5,
           pointHoverBackgroundColor: "rgba(75,192,192,1)",
-          pointHoverBorderColor: "rgba(220,220,220,1)",
-          pointHoverBorderWidth: 2,
+          pointHoverBorderColor: "rgba(220,220,220)",
+          pointHoverBorderWidth: 4,
           pointRadius: 1,
           pointHitRadius: 10,
           spanGaps: false,
@@ -72,55 +74,137 @@
           // type:"",
           label: "Workout Distance",
           data: this.savedData[this.getCurrentPage]?.data.map((ele) => +ele.distance),
-          borderWidth: 1,
+          fill: false,
           backgroundColor: "rgba(75, 192, 122, 0.4)",
-          borderColor: "rgba(75,192,192,1)",
+          borderColor: "rgba(72, 234, 137, 0.7)",
+          borderCapStyle: "butt",
+          borderWidth: 2,
+          hoverBorderWidth: 3,
+          borderDashOffset: 0.0,
+          borderJoinStyle: "miter",
+          pointBorderColor: "rgba(72, 234, 137)",
+          pointBackgroundColor: "#fff",
+          pointBorderWidth: 1,
+          pointHoverRadius: 5,
+          pointHoverBackgroundColor: "rgba(75, 192, 122, 0.1)",
+          pointHoverBorderColor: "rgba(72, 234, 137)",
+          pointHoverBorderWidth: 2,
+          pointRadius: 1,
+          pointHitRadius: 10,
+          spanGaps: false,
         },
         {
           // type:"running",
           label: "Running Cadence",
           data: this.savedData[this.getCurrentPage]?.data.map((ele) => +ele.cadence),
-          borderWidth: 1,
           backgroundColor: "rgba(126, 192, 75, 0.4)",
-          borderColor: "rgba(75,192,192,1)",
+          borderColor: "rgba(138, 234, 64, 0.7)",
+          borderCapStyle: "butt",
+          fill: false,
+          borderWidth: 2,
+          hoverBorderWidth: 3,
+          borderDashOffset: 0.0,
+          borderJoinStyle: "miter",
+          pointBorderColor: "rgba(138, 234, 64)",
+          pointBackgroundColor: "#fff",
+          pointBorderWidth: 1,
+          pointHoverRadius: 5,
+          pointHoverBackgroundColor: "rgba(126, 192, 75, 0.1)",
+          pointHoverBorderColor: "rgba(138, 234, 64)",
+          pointHoverBorderWidth: 2,
+          pointRadius: 1,
+          pointHitRadius: 10,
+          spanGaps: false,
         },
         {
           label: "Cycling pace",
           data: this.savedData[this.getCurrentPage]?.data.map((ele) => +ele.pace),
-          borderWidth: 1,
           backgroundColor: "rgba(192, 188, 75, 0.4)",
-          borderColor: "rgba(75,192,192,1)",
+          borderColor: "rgba(237, 232, 70, 0.7)",
+          borderCapStyle: "butt",
+          fill: false,
+          borderWidth: 2,
+          hoverBorderWidth: 3,
+          borderDashOffset: 0.0,
+          borderJoinStyle: "miter",
+          pointBorderColor: "rgba(237, 232, 70)",
+          pointBackgroundColor: "#fff",
+          pointBorderWidth: 1,
+          pointHoverRadius: 5,
+          pointHoverBackgroundColor: "rgba(192, 188, 75, 0.1)",
+          pointHoverBorderColor: "rgba(237, 232, 70)",
+          pointHoverBorderWidth: 2,
+          pointRadius: 1,
+          pointHitRadius: 10,
+          spanGaps: false,
         },
         {
           // type:"running",
           label: "Running elevGain",
           data: this.savedData[this.getCurrentPage]?.data.map((ele) => +ele.elevGain),
-          borderWidth: 1,
           backgroundColor: "rgba(192, 128, 75, 0.4)",
-          borderColor: "rgba(75,192,192,1)",
+          borderColor: "rgba(247, 149, 69, 0.7)",
+          borderCapStyle: "butt",
+          fill: false,
+          borderWidth: 2,
+          hoverBorderWidth: 3,
+          borderDashOffset: 0.0,
+          borderJoinStyle: "miter",
+          pointBorderColor: "rgba(247, 149, 69)",
+          pointBackgroundColor: "#fff",
+          pointBorderWidth: 1,
+          pointHoverRadius: 5,
+          pointHoverBackgroundColor: "rgba(192, 128, 75, 0.1)",
+          pointHoverBorderColor: "rgba(247, 149, 69)",
+          pointHoverBorderWidth: 2,
+          pointRadius: 1,
+          pointHitRadius: 10,
+          spanGaps: false,
         },
         {
           // type:"cycling",
           label: "Cycling speed",
           data: this.savedData[this.getCurrentPage]?.data.map((ele) => +ele.speed),
-          borderWidth: 1,
           backgroundColor: "rgba(108, 75, 192, 0.4)",
-          borderColor: "rgba(75,192,192,1)",
+          borderColor: "rgba(116, 63, 248, 0.7)",
+          borderCapStyle: "butt",
+          fill: false,
+          borderWidth: 2,
+          hoverBorderWidth: 3,
+          borderDashOffset: 0.0,
+          borderJoinStyle: "miter",
+          pointBorderColor: "rgba(116, 63, 248)",
+          pointBackgroundColor: "#fff",
+          pointBorderWidth: 1,
+          pointHoverRadius: 5,
+          pointHoverBackgroundColor: "rgba(108, 75, 192, 0.1)",
+          pointHoverBorderColor: "rgba(116, 63, 248)",
+          pointHoverBorderWidth: 2,
+          pointRadius: 1,
+          pointHitRadius: 10,
+          spanGaps: false,
         },
       ];
       this._runningDataSets = [this._allDataSets[0], this._allDataSets[1], this._allDataSets[2], this._allDataSets[3]];
       this._cyclingDataSets = [this._allDataSets[0], this._allDataSets[1], this._allDataSets[4], this._allDataSets[5]];
-      this._chart = this._init(this._chartTypeInput.value, this.getSavedData, this.getCurrentPage);
-      this._chartTypeInput.addEventListener(
-        "change",
-        function (e) {
-          if (this.getSavedData.length > 0) {
-            if (e.target.value == "all") this._updateChartForAllType();
-            else if (e.target.value == "running") this._updateChartForRunningType();
-            else if (e.target.value == "cycling") this._updateChartForCyclingType();
+      this._chart = this._init(this._chartDataTypeInput.value, this.getSavedData, this.getCurrentPage);
+      const that = this;
+      this._chartDataTypeInput.addEventListener("change", function (e) {
+        if (that.getSavedData.length > 0) {
+          if (e.target.value == "all") that._updateChartForAllType();
+          else if (e.target.value == "running") that._updateChartForRunningType();
+          else if (e.target.value == "cycling") that._updateChartForCyclingType();
+        }
+      });
+      console.log(this._charShowTypeInput);
+      this._charShowTypeInput.addEventListener("change", function (e) {
+        if (that.getSavedData.length > 0) {
+          if (e.target.value == "bar" || e.target.value == "line" || e.target.value == "doughnut" || e.target.value == "pie" || e.target.value == "polarArea" || e.target.value == "radar") {
+            that._chart.config.type = e.target.value;
+            that._chart.update();
           }
-        }.bind(this)
-      );
+        }
+      });
     }
     // saved DAta
     get getSavedData() {
@@ -298,9 +382,9 @@
           },
           animations: {
             tension: {
-              duration: 1000,
+              duration: 10000,
               easing: "linear",
-              from: 10,
+              from: 15,
               to: 4,
               loop: true,
             },
@@ -377,9 +461,9 @@
       this.setSavedData = upDatedData;
       this.setCurrentPage = currentPage;
       if (this.getSavedData.length > 0) {
-        if (this._chartTypeInput.value == "all") this._updateChartForAllType();
-        else if (this._chartTypeInput.value == "running") this._updateChartForRunningType();
-        else if (this._chartTypeInput.value == "cycling") this._updateChartForCyclingType();
+        if (this._chartDataTypeInput.value == "all") this._updateChartForAllType();
+        else if (this._chartDataTypeInput.value == "running") this._updateChartForRunningType();
+        else if (this._chartDataTypeInput.value == "cycling") this._updateChartForCyclingType();
       } else {
         this._chart.data = {};
         this._chart.update();
@@ -423,13 +507,6 @@
       this._workoutShownEvent = new CustomEvent("workoutshown");
       this._workoutsDiv.addEventListener("workoutshown", this._workwoutShownCallback.bind(this));
       this._toggle.addEventListener("click", this._changeThemeCallback.bind(this));
-      this._body.addEventListener(
-        "mapoptionshown",
-        function () {
-          document.querySelector("#map_add_data_btn").addEventListener("click", this._formShowHideCallback.bind(this));
-          document.querySelector("#map_timer_button").addEventListener("click", this._timerShowHideCallback.bind(this));
-        }.bind(this)
-      );
       // calling ask geoLocation function
       this._askTheGeolocation();
       this._setTheme();
@@ -505,6 +582,18 @@
       }
       this._mapDiv.style.backgroundImage = "url('')";
       this.#map.on("click", this._showOptionsOnMapClick.bind(this));
+      const that = this;
+      this.#map.on("popupclose", function () {
+        document.querySelector("#map_add_data_btn").removeEventListener("click", that._formShowHideCallback.bind(that));
+        document.querySelector("#map_timer_button").removeEventListener("click", that._timerShowHideCallback.bind(that));
+      });
+      this.#map.on("popupopen", function () {
+        // it takes time to update the dom tree with new element.
+        setTimeout(function () {
+          document.querySelector("#map_add_data_btn").addEventListener("click", that._formShowHideCallback.bind(that));
+          document.querySelector("#map_timer_button").addEventListener("click", that._timerShowHideCallback.bind(that));
+        }, 500);
+      });
     }
 
     _showMapError(err) {
@@ -541,8 +630,6 @@
         closeOnEscapeKey: true,
       }).openOn(this.#map);
       this.#mapLatlng = Object.values(mapEvent.latlng);
-      const mapoptionevent = new CustomEvent("mapoptionshown");
-      this._body.dispatchEvent(mapoptionevent);
     }
     _timerShowHideCallback() {
       this._timerDiv.classList.toggle("hidden");
@@ -627,7 +714,7 @@
       this._saveData(savedData);
     }
     _getSavedData() {
-      return  JSON.parse(window.localStorage.getItem("workoutData")) || this.workout;
+      return JSON.parse(window.localStorage.getItem("workoutData")) || this.workout;
     }
     _saveData(data) {
       window.localStorage.setItem("workoutData", JSON.stringify(data));
@@ -723,7 +810,7 @@
         if (ele != null && typeof ele == "object" && ele?.data.length > 0) haveNoData = false;
       });
       if (haveNoData) savedData = {};
-      this._saveData(savedData) 
+      this._saveData(savedData);
     }
     _workoutDeleteCallback(e) {
       e.preventDefault();
