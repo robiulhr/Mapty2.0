@@ -478,14 +478,19 @@
         }
         this._currentInterval = setInterval(this._displayTimer.bind(this), 10);
         this.setTimerState = "timerRunning";
+        document.getElementById("pauseTimer").textContent = "Pause"
       });
       document.getElementById("pauseTimer").addEventListener("click", () => {
-        if (this.getTimerState == "timerPaused") {
-          this._currentInterval = setInterval(this._displayTimer.bind(this), 10);
-          this.setTimerState = "timerRunning";
-        } else {
-          clearInterval(this._currentInterval);
-          this.setTimerState = "timerPaused";
+        if(this.getTimerState  != "timerStoped"){
+          if (this.getTimerState == "timerPaused") {
+            this._currentInterval = setInterval(this._displayTimer.bind(this), 10);
+            this.setTimerState = "timerRunning";
+            document.getElementById("pauseTimer").textContent = "Pause"
+          } else {
+            clearInterval(this._currentInterval);
+            this.setTimerState = "timerPaused";
+            document.getElementById("pauseTimer").textContent = "Play"
+          }
         }
       });
       document.getElementById("resetTimer").addEventListener("click", this._resetTimer.bind(this));
@@ -533,6 +538,7 @@
     _resetTimer() {
       if (this._currentInterval != null) {
         clearInterval(this._currentInterval);
+        document.getElementById("pauseTimer").textContent = "Pause"
         this._resetAllData();
         swalWithBootstrapButtons
           .fire({
