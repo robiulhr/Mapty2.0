@@ -720,10 +720,10 @@ body.offline .button ,body.old-browser .button{
 }
 
 #timer .buttons button:nth-last-child(2){
-  background-color: var(--color-brand--2);
+  background-color: var(--blue-border);
 }
 #timer .buttons button:nth-last-child(1){
-  background-color: var(--blue-border);
+  background-color: var(--color-brand--2);
 }
 
 /* map options css  */

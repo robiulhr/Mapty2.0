@@ -1,5 +1,6 @@
 (function (window, document) {
   const allMonth = ["January", "February", "March", "April", "June", "July", "August", "September", "October", "November", "December"];
+  const swalWithBootstrapButtons = Swal.mixin({ buttonsStyling: true });
   class Workout {
     #_date = new Date();
     constructor(id, location, distance, duration) {
@@ -191,12 +192,14 @@
       const that = this;
       this._chartDataTypeInput.addEventListener("change", function (e) {
         if (that.getSavedData.length > 0) {
-          if (e.target.value == "all") that._updateChartForAllType();
-          else if (e.target.value == "running") that._updateChartForRunningType();
-          else if (e.target.value == "cycling") that._updateChartForCyclingType();
-        }
+          if(that.getSavedData[that.getCurrentPage]){
+            if (e.target.value == "all") that._updateChartForAllType();
+            else if (e.target.value == "running") that._updateChartForRunningType();
+            else if (e.target.value == "cycling") that._updateChartForCyclingType();
+          
+          }
+      }
       });
-      console.log(this._charShowTypeInput);
       this._charShowTypeInput.addEventListener("change", function (e) {
         if (that.getSavedData.length > 0) {
           if (e.target.value == "bar" || e.target.value == "line" || e.target.value == "radar") {
@@ -319,7 +322,6 @@
           scales: {
             y: {
               beginAtZero: true,
-              //   backgroundColor: "red",
               grid: {
                 display: true,
                 color: "#555b75",
@@ -445,9 +447,14 @@
       this.setSavedData = upDatedData;
       this.setCurrentPage = currentPage;
       if (this.getSavedData.length > 0) {
-        if (this._chartDataTypeInput.value == "all") this._updateChartForAllType();
-        else if (this._chartDataTypeInput.value == "running") this._updateChartForRunningType();
-        else if (this._chartDataTypeInput.value == "cycling") this._updateChartForCyclingType();
+        if (this.getSavedData[this.getCurrentPage] && this.getSavedData[this.getCurrentPage].data.length>0) {
+          if (this._chartDataTypeInput.value == "all") this._updateChartForAllType();
+          else if (this._chartDataTypeInput.value == "running") this._updateChartForRunningType();
+          else if (this._chartDataTypeInput.value == "cycling") this._updateChartForCyclingType();
+        } else {
+          this._chart.data = {};
+          this._chart.update();
+        }
       } else {
         this._chart.data = {};
         this._chart.update();
@@ -455,10 +462,119 @@
     }
   }
 
+  class MyTimer {
+    _timerRef = document.querySelector("#timer .timerDisplay");
+    constructor() {
+      this._milliseconds = 0;
+      this._seconds = 0;
+      this._minutes = 0;
+      this._currentInterval = null;
+      this._timerState = "timerStoped";
+      this._timerData = 0;
+
+      document.getElementById("startTimer").addEventListener("click", () => {
+        if (this._currentInterval !== null) {
+          clearInterval(this._currentInterval);
+          this._resetAllData();
+        }
+        this._currentInterval = setInterval(this._displayTimer.bind(this), 10);
+        this.setTimerState = "timerRunning";
+      });
+      document.getElementById("pauseTimer").addEventListener("click", () => {
+        if (this.getTimerState == "timerPaused") {
+          this._currentInterval = setInterval(this._displayTimer.bind(this), 10);
+          this.setTimerState = "timerRunning";
+        } else {
+          clearInterval(this._currentInterval);
+          this.setTimerState = "timerPaused";
+        }
+      });
+      document.getElementById("resetTimer").addEventListener("click", this._resetTimer.bind(this));
+    }
+    get getTimerData() {
+      return this._timerData;
+    }
+    set setTimerData(data) {
+      return (this._timerData = data);
+    }
+    get getTimerState() {
+      return this._timerState;
+    }
+    set setTimerState(state) {
+      return (this._timerState = state);
+    }
+
+    _displayTimer() {
+      this._milliseconds += 10;
+      if (this._milliseconds == 1000) {
+        this._milliseconds = 0;
+        this._seconds++;
+        if (this._seconds == 60) {
+          this._seconds = 0;
+          this._minutes++;
+          if (this._minutes == 60) {
+            this._minutes = 0;
+            this._hours++;
+          }
+        }
+      }
+      let m = this._minutes < 10 ? "0" + this._minutes : this._minutes;
+      let s = this._seconds < 10 ? "0" + this._seconds : this._seconds;
+      let ms = this._milliseconds < 10 ? "00" + this._milliseconds : this._milliseconds < 100 ? "0" + this._milliseconds : this._milliseconds;
+      this._timerRef.innerHTML = `${m} : ${s} : ${ms}`;
+    }
+    _resetAllData() {
+      this._currentInterval = null;
+      this._milliseconds = 0;
+      this._seconds = 0;
+      this._minutes = 0;
+      this._timerRef.innerHTML = "00 : 00 : 000 ";
+      this.setTimerState = "timerStoped";
+    }
+    _resetTimer() {
+      if (this._currentInterval != null) {
+        clearInterval(this._currentInterval);
+        this._resetAllData();
+        swalWithBootstrapButtons
+          .fire({
+            customClass: {
+              cancelButton: "btn btn-danger",
+              confirmButton: "btn btn-success",
+            },
+            title: "You have an unsaved data.",
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonText: "Save",
+            cancelButtonText: "Delete",
+            reverseButtons: false,
+          })
+          .then((result) => {
+            if (result.isDismissed || result.isDenied) {
+              return;
+            } else if (result.isConfirmed) {
+              if (this._minutes < 5) {
+                swalWithBootstrapButtons.fire({
+                  text: "To small data to save.",
+                  iconHtml: "!",
+                  showCancelButton: false,
+                  confirmButtonText: "Ok",
+                  reverseButtons: false,
+                });
+              } else {
+                this.setTimerData = this._minutes + Math.floor(this._seconds / 60);
+                const haveToSaveTimerData = new CustomEvent("haveToSaveTimerData");
+                document.dispatchEvent(haveToSaveTimerData);
+                this.setTimerData = 0;
+              }
+            }
+          });
+      }
+    }
+  }
+
   class App {
     #map;
     #mapLatlng;
-    #swalWithBootstrapButtons = Swal.mixin({ buttonsStyling: true });
     #updateWorkoutDataId = null;
     // getting dom elements
     _html = document.querySelector("html");
@@ -478,6 +594,7 @@
     _timerDiv = document.querySelector("#timer");
     _paginate;
     _chart;
+    _timer;
     _bottomSectionDiv = document.querySelector(".bottom_section");
     constructor() {
       this.workout = {};
@@ -488,12 +605,35 @@
       this._form.addEventListener("submit", this._formSubmitCallback.bind(this));
       this._typeInput.addEventListener("change", this._inputTypeCallback.bind(this));
       this._formCross.addEventListener("click", this._formShowHideCallback.bind(this));
+      this._pageChangeEvent = new CustomEvent("pagechange");
+      document.addEventListener(
+        "pagechange",
+        function () {
+          const savedData = this._getSavedData().data || [];
+          if (savedData[this._paginate.getCurrentPage]) {
+            savedData[this._paginate.getCurrentPage]?.data.forEach((ele) => {
+              this._mapMarker(ele.location, ele.type, ele.dateStr);
+            });
+            // show data on chart
+          } else {
+          }
+          this._chart._dataUpdate(savedData, this._paginate.getCurrentPage);
+        }.bind(this)
+      );
       this._workoutShownEvent = new CustomEvent("workoutshown");
       this._workoutsDiv.addEventListener("workoutshown", this._workwoutShownCallback.bind(this));
       this._toggle.addEventListener("click", this._changeThemeCallback.bind(this));
       // calling ask geoLocation function
       this._askTheGeolocation();
       this._setTheme();
+      this._timerClass = new MyTimer();
+      document.addEventListener(
+        "haveToSaveTimerData",
+        function (e) {
+          e.preventDefault();
+          this._formShowHide("running", "", this._timerClass.getTimerData);
+        }.bind(this)
+      );
     }
     /**
      *
@@ -506,6 +646,7 @@
             this._showThemap(croods);
             // create the pagination and render the workout
             const savedData = this._getSavedData().data || [];
+            // create pagination and show data on list
             this._paginate = new ProPaginate({
               data: savedData,
               itemsView: "column_view",
@@ -519,8 +660,17 @@
               onPageRender: function () {
                 this._workoutsDiv.dispatchEvent(this._workoutShownEvent);
               }.bind(this),
+              onCurrentPageChange: function () {
+                document.dispatchEvent(this._pageChangeEvent);
+              }.bind(this),
             });
+            // show data on map
+            savedData[this._paginate.getCurrentPage].data.forEach((ele) => {
+              this._mapMarker(ele.location, ele.type, ele.dateStr);
+            });
+            // show data on chart
             this._chart = new MyChartClass(savedData, this.currentMonth);
+
             if (this._getSavedData().data) {
               this._workoutsDiv.dispatchEvent(this._workoutShownEvent);
             }
@@ -535,7 +685,7 @@
       }
     }
     _showOldBrowserError() {
-      this.#swalWithBootstrapButtons.fire({
+      swalWithBootstrapButtons.fire({
         title: "Old version Browser.",
         text: "Please use a modern one.",
         iconHtml: "?",
@@ -568,14 +718,18 @@
       this.#map.on("click", this._showOptionsOnMapClick.bind(this));
       const that = this;
       this.#map.on("popupclose", function () {
-        document.querySelector("#map_add_data_btn").removeEventListener("click", that._formShowHideCallback.bind(that));
-        document.querySelector("#map_timer_button").removeEventListener("click", that._timerShowHideCallback.bind(that));
+        if (document.querySelector(".leaflet-popup").querySelector("#map_add_data_btn") && document.querySelector(".leaflet-popup").querySelector("#map_timer_button")) {
+          document.querySelector("#map_add_data_btn").removeEventListener("click", that._formShowHideCallback.bind(that));
+          document.querySelector("#map_timer_button").removeEventListener("click", that._timerShowHideCallback.bind(that));
+        }
       });
       this.#map.on("popupopen", function () {
         // it takes time to update the dom tree with new element.
         setTimeout(function () {
-          document.querySelector("#map_add_data_btn").addEventListener("click", that._formShowHideCallback.bind(that));
-          document.querySelector("#map_timer_button").addEventListener("click", that._timerShowHideCallback.bind(that));
+          if (document.querySelector(".leaflet-popup").querySelector("#map_add_data_btn") && document.querySelector(".leaflet-popup").querySelector("#map_timer_button")) {
+            document.querySelector("#map_add_data_btn").addEventListener("click", that._formShowHideCallback.bind(that));
+            document.querySelector("#map_timer_button").addEventListener("click", that._timerShowHideCallback.bind(that));
+          }
         }, 500);
       });
     }
@@ -584,7 +738,7 @@
       console.log(err);
     }
     _showTheErrorForGeolocation() {
-      this.#swalWithBootstrapButtons
+      swalWithBootstrapButtons
         .fire({
           title: "You haven'nt allowed the location.",
           text: "Please Give the permission to use the app.",
@@ -601,22 +755,51 @@
         });
     }
     _showOptionsOnMapClick(mapEvent) {
-      const crood = Object.values(mapEvent.latlng);
-      const popup = L.popup(crood, {
-        content: `<div class="map-menu-wrapper"><div id="map_add_data_btn" class="plus-icon" title="Add new workout."><span class="material-symbols-outlined">
+      if (this._timerClass.getTimerState == "timerRunning" || this._timerClass.getTimerState == "timerPaused") {
+        swalWithBootstrapButtons.fire({
+          title: "You have a unsaved timer Data.",
+          text: "please save it first.",
+          iconHtml: "!",
+          showCancelButton: false,
+          confirmButtonText: "Ok",
+          reverseButtons: false,
+        });
+      } else {
+        const crood = Object.values(mapEvent.latlng);
+        const popup = L.popup(crood, {
+          content: `<div class="map-menu-wrapper"><div id="map_add_data_btn" class="plus-icon" title="Add new workout."><span class="material-symbols-outlined">
             add
             </span>
             </div> <div id="map_timer_button" class="timer-icon map_timer" title="Timers">
                 <span class="workout__icon">⏱</span>
             </div>
             </div>`,
-        minWidth: "140",
-        closeOnEscapeKey: true,
-      }).openOn(this.#map);
-      this.#mapLatlng = Object.values(mapEvent.latlng);
+          minWidth: "140",
+          closeOnEscapeKey: true,
+        }).openOn(this.#map);
+        this.#mapLatlng = Object.values(mapEvent.latlng);
+      }
     }
     _timerShowHideCallback() {
-      this._timerDiv.classList.toggle("hidden");
+      if (this._timerClass.getTimerState == "timerRunning") {
+        swalWithBootstrapButtons.fire({
+          text: "Timer is running",
+          iconHtml: "!",
+          showCancelButton: false,
+          confirmButtonText: "Ok",
+          reverseButtons: false,
+        });
+      } else if (this._timerClass.getTimerState == "timerPaused") {
+        swalWithBootstrapButtons.fire({
+          text: "Timer is paused.",
+          iconHtml: "!",
+          showCancelButton: false,
+          confirmButtonText: "Ok",
+          reverseButtons: false,
+        });
+      } else if (this._timerClass.getTimerState == "timerStoped") {
+        this._timerDiv.classList.toggle("hidden");
+      }
     }
     _formShowHideCallback(e) {
       e.preventDefault();
@@ -653,9 +836,15 @@
         const savedData = this._getSavedData().data || [];
         this._paginate.setCurrentPage = this.currentMonth;
         this._paginate.updateData = savedData;
+        // show data on map
+        savedData[this._paginate.getCurrentPage].data.forEach((ele) => {
+          this._mapMarker(ele.location, ele.type, ele.dateStr);
+        });
+        // show data on chart
         this._chart._dataUpdate(savedData, this.currentMonth);
         this._workoutsDiv.dispatchEvent(this._workoutShownEvent);
         this.#updateWorkoutDataId = null;
+        // hide form
         this._formShowHide(formValues[0]);
       }
     }
@@ -761,12 +950,11 @@
     _workoutEditCallback(e) {
       e.preventDefault();
       const element = e.target.closest("li");
-      this.#swalWithBootstrapButtons
+      swalWithBootstrapButtons
         .fire({
           customClass: {
             confirmButton: "btn btn-info",
           },
-          title: "Are you sure?",
           text: "You wanna Edit this workout Item.",
           icon: "question",
           showCancelButton: true,
@@ -799,7 +987,7 @@
     _workoutDeleteCallback(e) {
       e.preventDefault();
       const element = e.target.closest("li");
-      this.#swalWithBootstrapButtons
+      swalWithBootstrapButtons
         .fire({
           customClass: {
             confirmButton: "btn btn-danger",
@@ -815,12 +1003,15 @@
         .then(async (result) => {
           if (result.isConfirmed) {
             await this._workoutDelete(element);
-            await this.#swalWithBootstrapButtons.fire("Deleted!", "Your file has been deleted.", "success");
+            await swalWithBootstrapButtons.fire("Deleted!", "Your file has been deleted.", "success");
             const savedData = (await this._getSavedData().data) || [];
             await (this._paginate.updateData = savedData);
+            await savedData[this._paginate.getCurrentPage].data.forEach((ele) => {
+              this._mapMarker(ele.location, ele.type, ele.dateStr);
+            });
             await this._chart._dataUpdate(savedData, this.currentMonth);
           } else {
-            this.#swalWithBootstrapButtons.fire("Cancelled", "Your imaginary data is safe :)", "error");
+            swalWithBootstrapButtons.fire("Cancelled", "Your imaginary data is safe :)", "error");
           }
         });
     }
@@ -830,6 +1021,7 @@
       }, this);
     }
   }
+
   // if the user is ofline or online
   class IsOnline {
     _body = document.querySelector("body");
@@ -856,46 +1048,4 @@
   }
 
   new IsOnline();
-
-  // stop watch js
-
-  class Timer {}
-
-  let [milliseconds, seconds, minutes, hours] = [0, 0, 0, 0];
-  let timerRef = document.querySelector(".timerDisplay");
-  let currentInterval = null;
-  document.getElementById("startTimer").addEventListener("click", () => {
-    if (currentInterval !== null) {
-      clearInterval(currentInterval);
-    }
-    currentInterval = setInterval(displayTimer, 10);
-  });
-  document.getElementById("pauseTimer").addEventListener("click", () => {
-    clearInterval(currentInterval);
-  });
-  document.getElementById("resetTimer").addEventListener("click", () => {
-    clearInterval(currentInterval);
-    [milliseconds, seconds, minutes, hours] = [0, 0, 0, 0];
-    timerRef.innerHTML = "00 : 00 : 00 : 000 ";
-  });
-  function displayTimer() {
-    milliseconds += 10;
-    if (milliseconds == 1000) {
-      milliseconds = 0;
-      seconds++;
-      if (seconds == 60) {
-        seconds = 0;
-        minutes++;
-        if (minutes == 60) {
-          minutes = 0;
-          hours++;
-        }
-      }
-    }
-    let h = hours < 10 ? "0" + hours : hours;
-    let m = minutes < 10 ? "0" + minutes : minutes;
-    let s = seconds < 10 ? "0" + seconds : seconds;
-    let ms = milliseconds < 10 ? "00" + milliseconds : milliseconds < 100 ? "0" + milliseconds : milliseconds;
-    timerRef.innerHTML = ` ${h} : ${m} : ${s} : ${ms}`;
-  }
 })(window, document);
