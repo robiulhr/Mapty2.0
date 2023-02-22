@@ -1,44 +1,69 @@
 @media only screen and (max-width: 1200px) {
-    .sidebar {
-        flex-basis: 50rem;
-      }
+  .sidebar {
+    flex-basis: 45rem;
+  }
+  .workout{
+    max-width: 400px;
+  }
 }
 @media only screen and (max-width: 1000px) {
-    .sidebar {
-        flex-basis: 45rem;
-        padding: 2rem 4rem 3rem 4rem;
-      }
-    
+  .sidebar {
+    flex-basis: 30rem;
+    padding: 2rem 4rem 3rem 4rem;
+  }
+  .upper_section{
+    flex-direction: column;
+    height: auto;
+  }
+  .workout{
+    max-width: 500px;
+  }
+  #map{
+    height: 50vw;
+  }
+  .bottom_section {
+    flex-direction: column;
+    height: inherit;
+  }
 }
 @media only screen and (max-width: 900px) {
-    main{
-        flex-direction: column;
-        min-height: 100vh;
-        height: inherit;
-    }
-    .sidebar {
-        padding: 4rem 8rem 5rem 8rem;
-      }
-    .form {
-        grid-template-columns: 1fr 1fr 1fr 1fr;
-    }
-    #map{
-        flex: auto;
-        height: 100vh;
-        width: 100%;
-    }
-    .form {
-         grid-template-columns: 1fr 1fr; 
-    }
-} 
+  
+  .sidebar {
+    padding: 1rem 4rem 1rem 4rem;
+  }
+  .form {
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+  }
+  #map {
+    flex: auto;
+    width: 100%;
+  }
+  #map {
+    height: 50vh;
+  }
+  .form {
+    grid-template-columns: 1fr 1fr;
+  }
+  #timer.container {
+    top: inherit;
+    bottom: 15px;
+    right: 5rem;
+  }
+  .timer-icon {
+    left: 8rem;
+  }
+  .bottom_section{
+    display: none !important;
+  }
+}
 
 
 @media only screen and (max-width: 600px) {
-    .sidebar {
-        padding: 3rem 4rem 4rem 4rem;
-      }
-    .no-data-available p{
-        line-height: 5rem;
-        font-size: 1.4rem;
-    }
-} 
+  .sidebar {
+    padding: 3rem 4rem 4rem 4rem;
+  }
+  .no-data-available p {
+    line-height: 5rem;
+    font-size: 1.4rem;
+  }
+}
