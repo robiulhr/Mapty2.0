@@ -192,13 +192,12 @@
       const that = this;
       this._chartDataTypeInput.addEventListener("change", function (e) {
         if (that.getSavedData.length > 0) {
-          if(that.getSavedData[that.getCurrentPage]){
+          if (that.getSavedData[that.getCurrentPage]) {
             if (e.target.value == "all") that._updateChartForAllType();
             else if (e.target.value == "running") that._updateChartForRunningType();
             else if (e.target.value == "cycling") that._updateChartForCyclingType();
-          
           }
-      }
+        }
       });
       this._charShowTypeInput.addEventListener("change", function (e) {
         if (that.getSavedData.length > 0) {
@@ -447,7 +446,7 @@
       this.setSavedData = upDatedData;
       this.setCurrentPage = currentPage;
       if (this.getSavedData.length > 0) {
-        if (this.getSavedData[this.getCurrentPage] && this.getSavedData[this.getCurrentPage].data.length>0) {
+        if (this.getSavedData[this.getCurrentPage] && this.getSavedData[this.getCurrentPage].data.length > 0) {
           if (this._chartDataTypeInput.value == "all") this._updateChartForAllType();
           else if (this._chartDataTypeInput.value == "running") this._updateChartForRunningType();
           else if (this._chartDataTypeInput.value == "cycling") this._updateChartForCyclingType();
@@ -596,6 +595,8 @@
     _chart;
     _timer;
     _bottomSectionDiv = document.querySelector(".bottom_section");
+    _mapMarkerArr = [];
+    _mapCircleArr = [];
     constructor() {
       this.workout = {};
       this.defaultTheme = "dark";
@@ -610,13 +611,18 @@
         "pagechange",
         function () {
           const savedData = this._getSavedData().data || [];
-          if (savedData[this._paginate.getCurrentPage]) {
-            savedData[this._paginate.getCurrentPage]?.data.forEach((ele) => {
-              this._mapMarker(ele.location, ele.type, ele.dateStr);
-            });
-            // show data on chart
-          } else {
-          }
+          this._removeAllMapMarker();
+          savedData.forEach((elem, ind) => {
+            if (ind == this._paginate.getCurrentPage) {
+                this._mapMarkerArr = [];
+                this._mapCircleArr = [];
+                elem?.data.forEach((ele) => {
+                  this._newMapMarker(ele.location, ele.type, ele.dateStr);
+                });
+              this._renderAllMapMarker();
+            }
+          });
+          // show data on chart
           this._chart._dataUpdate(savedData, this._paginate.getCurrentPage);
         }.bind(this)
       );
@@ -665,9 +671,10 @@
               }.bind(this),
             });
             // show data on map
-            savedData[this._paginate.getCurrentPage].data.forEach((ele) => {
-              this._mapMarker(ele.location, ele.type, ele.dateStr);
+            savedData[this.currentMonth]?.data.forEach((ele) => {
+              this._newMapMarker(ele.location, ele.type, ele.dateStr);
             });
+            this._renderAllMapMarker();
             // show data on chart
             this._chart = new MyChartClass(savedData, this.currentMonth);
 
@@ -718,7 +725,7 @@
       this.#map.on("click", this._showOptionsOnMapClick.bind(this));
       const that = this;
       this.#map.on("popupclose", function () {
-        if (document.querySelector(".leaflet-popup").querySelector("#map_add_data_btn") && document.querySelector(".leaflet-popup").querySelector("#map_timer_button")) {
+        if (document.querySelector(".leaflet-popup")?.querySelector("#map_add_data_btn") && document.querySelector(".leaflet-popup")?.querySelector("#map_timer_button")) {
           document.querySelector("#map_add_data_btn").removeEventListener("click", that._formShowHideCallback.bind(that));
           document.querySelector("#map_timer_button").removeEventListener("click", that._timerShowHideCallback.bind(that));
         }
@@ -726,7 +733,7 @@
       this.#map.on("popupopen", function () {
         // it takes time to update the dom tree with new element.
         setTimeout(function () {
-          if (document.querySelector(".leaflet-popup").querySelector("#map_add_data_btn") && document.querySelector(".leaflet-popup").querySelector("#map_timer_button")) {
+          if (document.querySelector(".leaflet-popup")?.querySelector("#map_add_data_btn") && document.querySelector(".leaflet-popup")?.querySelector("#map_timer_button")) {
             document.querySelector("#map_add_data_btn").addEventListener("click", that._formShowHideCallback.bind(that));
             document.querySelector("#map_timer_button").addEventListener("click", that._timerShowHideCallback.bind(that));
           }
@@ -836,10 +843,6 @@
         const savedData = this._getSavedData().data || [];
         this._paginate.setCurrentPage = this.currentMonth;
         this._paginate.updateData = savedData;
-        // show data on map
-        savedData[this._paginate.getCurrentPage].data.forEach((ele) => {
-          this._mapMarker(ele.location, ele.type, ele.dateStr);
-        });
         // show data on chart
         this._chart._dataUpdate(savedData, this.currentMonth);
         this._workoutsDiv.dispatchEvent(this._workoutShownEvent);
@@ -879,6 +882,10 @@
       savedData.data[month]["data"] ??= [];
       savedData.data[month]["data"].push(workout);
       this._saveData(savedData);
+      // show data on map
+      this._removeAllMapMarker();
+      this._newMapMarker(this.#mapLatlng, workout.type, workout.dateStr);
+      this._renderAllMapMarker();
     }
     _updateworkout(id, type, distance, duration, cadence, elevGain, mapLatlng) {
       const savedData = this._getSavedData();
@@ -892,17 +899,46 @@
     _saveData(data) {
       window.localStorage.setItem("workoutData", JSON.stringify(data));
     }
-    _mapMarker(mapLatlngValue, type, dateStr) {
-      L.circle(mapLatlngValue, { radius: 30 }).addTo(this.#map);
-      L.marker(mapLatlngValue)
-        .addTo(this.#map)
-        .bindPopup(`${type == "Running" ? "🏃‍♂️" : "🚴‍♀️"} ${type} on ${dateStr}`, {
-          maxWidth: 200,
-          maxHeight: 500,
-          closeButton: false,
-          className: `${type.slice(0, 1).toLowerCase() + type.slice(1)}-popup`,
-        })
-        .openPopup();
+    _newMapMarker(mapLatlngValue, type, dateStr) {
+      const mapCircle = L.circle(mapLatlngValue, { radius: 30 });
+      const mapMarker = L.marker(mapLatlngValue).bindPopup(`${type == "Running" ? "🏃‍♂️" : "🚴‍♀️"} ${type} on ${dateStr}`, {
+        maxWidth: 200,
+        maxHeight: 500,
+        closeButton: false,
+        className: `${type.slice(0, 1).toLowerCase() + type.slice(1)}-popup`,
+      });
+      this._mapMarkerArr.push(mapMarker);
+      this._mapCircleArr.push(mapCircle);
+    }
+    _deleteSingleMapMarker(lat, lng) {
+      this._mapMarkerArr = this._mapMarkerArr.filter((ele) => {
+        if (ele._latlng.lat == lat && ele._latlng.lng == lng) {
+          this.#map.removeLayer(ele);
+        }
+        return ele._latlng.lat != lat && ele._latlng.lng != lng;
+      });
+      this._mapCircleArr = this._mapCircleArr.filter((ele) => {
+        if (ele._latlng.lat == lat && ele._latlng.lng == lng) {
+          this.#map.removeLayer(ele);
+        }
+        return ele._latlng.lat != lat && ele._latlng.lng != lng;
+      });
+    }
+    _renderAllMapMarker() {
+      this._mapMarkerArr?.forEach((ele) => {
+        ele.addTo(this.#map).openPopup();
+      });
+      this._mapCircleArr?.forEach((ele) => {
+        ele.addTo(this.#map).openPopup();
+      });
+    }
+    _removeAllMapMarker() {
+      this._mapMarkerArr?.forEach((ele) => {
+        this.#map.removeLayer(ele);
+      });
+      this._mapCircleArr?.forEach((ele) => {
+        this.#map.removeLayer(ele);
+      });
     }
     _inputTypeCallback(e) {
       e.preventDefault();
@@ -1002,13 +1038,12 @@
         })
         .then(async (result) => {
           if (result.isConfirmed) {
+            const [lat, lng] = this._getSavedData().data[this._paginate.getCurrentPage].data.find((ele) => ele.id == element.attributes[1].value).location;
             await this._workoutDelete(element);
             await swalWithBootstrapButtons.fire("Deleted!", "Your file has been deleted.", "success");
             const savedData = (await this._getSavedData().data) || [];
             await (this._paginate.updateData = savedData);
-            await savedData[this._paginate.getCurrentPage].data.forEach((ele) => {
-              this._mapMarker(ele.location, ele.type, ele.dateStr);
-            });
+            await this._deleteSingleMapMarker(lat, lng);
             await this._chart._dataUpdate(savedData, this.currentMonth);
           } else {
             swalWithBootstrapButtons.fire("Cancelled", "Your imaginary data is safe :)", "error");
@@ -1046,6 +1081,5 @@
       this._body.classList.remove("offline");
     }
   }
-
   new IsOnline();
 })(window, document);
