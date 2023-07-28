@@ -26,4 +26,4 @@ Udemy course link: [The Complete JavaScript Course 2023: From Zero to Expert!
 
 ### Live site link
 
-[click here](https://robiulhr.github.io/Mapty/)
+[click here](https://robiulhr.github.io/Mapty2.0/)
